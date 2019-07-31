@@ -1,0 +1,40 @@
+{
+    "name": "craftcms/commerce-taxjar",
+    "description": "TaxJar Integration for Craft Commerce",
+    "type": "craft-plugin",
+    "version": "1.0.1",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "taxjar"
+    ],
+    "support": {
+        "docs": "http://github.com/craftcms/commerce-taxjar",
+        "issues": "http://github.com/craftcms/commerce-taxjar/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pixel & Tonic",
+            "homepage": "http://craftcms.com"
+        }
+    ],
+    "require": {
+        "craftcms/commerce": "^2.1|^3.0",
+        "taxjar/taxjar-php": "^1.8"
+    },
+    "autoload": {
+        "psr-4": {
+          "craft\\commerce\\taxjar\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "TaxJar",
+        "handle": "commerce-taxjar",
+        "hasCpSettings": false,
+        "hasCpSection": false,
+        "class": "craft\\commerce\\taxjar\\TaxJar"
+    }
+}
