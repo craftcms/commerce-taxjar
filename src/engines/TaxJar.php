@@ -30,7 +30,7 @@ class TaxJar implements TaxEngineInterface
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function taxAdjusterClass(): string
     {
@@ -102,7 +102,7 @@ class TaxJar implements TaxEngineInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function editTaxZones(): bool
     {
