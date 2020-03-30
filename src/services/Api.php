@@ -36,7 +36,8 @@ class Api extends Component
      */
     public function init()
     {
-        $this->_client = Client::withApiKey(TaxJar::getInstance()->getSettings()->apiKey);
+        $apiKey = TaxJar::getInstance()->getSettings()->apiKey;
+        $this->_client = Client::withApiKey($apiKey);
         if (\Craft::$app->getConfig()->getGeneral()->devMode) {
             $this->_client->setApiConfig('api_url', Client::SANDBOX_API_URL);
         }
