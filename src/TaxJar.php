@@ -16,6 +16,7 @@ use craft\commerce\models\Address;
 use craft\commerce\Plugin;
 use craft\commerce\services\Taxes;
 use craft\commerce\taxjar\adjusters\Tax;
+use craft\commerce\taxjar\models\Settings;
 use craft\commerce\taxjar\services\Api;
 use craft\commerce\taxjar\services\Categories;
 use craft\commerce\taxjar\engines\TaxJar as TaxJarEngine;
@@ -134,6 +135,14 @@ class TaxJar extends BasePlugin
     public function getApi()
     {
         return $this->get('api');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createSettingsModel()
+    {
+        return new Settings();
     }
 
     // Private Methods

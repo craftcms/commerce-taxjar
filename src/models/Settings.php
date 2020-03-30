@@ -19,6 +19,11 @@ use craft\commerce\base\Model;
 class Settings extends Model
 {
     /**
+     * @var string
+     */
+    public $apiKey;
+
+    /**
      * @inheritdoc
      */
     public function defineRules(): array

@@ -8,6 +8,7 @@
 namespace craft\commerce\taxjar\services;
 
 use TaxJar\Client;
+use craft\commerce\taxjar\TaxJar;
 use yii\base\Component;
 
 /**
@@ -16,6 +17,9 @@ use yii\base\Component;
  * @author Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @since 1.0
  *
+ *
+ * @property \TaxJar\Client $client
+ * @property mixed $categories
  */
 class Api extends Component
 {
@@ -32,7 +36,11 @@ class Api extends Component
      */
     public function init()
     {
-        $this->_client = Client::withApiKey('8bfb0693f9dabfb8df82021456a08f15');
+        $apiKey = TaxJar::getInstance()->getSettings()->apiKey;
+        $this->_client = Client::withApiKey($apiKey);
+        if (\Craft::$app->getConfig()->getGeneral()->devMode) {
+            $this->_client->setApiConfig('api_url', Client::SANDBOX_API_URL);
+        }
     }
 
     /**

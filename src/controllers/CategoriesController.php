@@ -35,7 +35,12 @@ class CategoriesController extends BaseCpController
         $this->requireAcceptsJson();
         $this->requirePermission('commerce-manageTaxes');
 
-        $allCategories = TaxJar::getInstance()->getApi()->getCategories();
+        try {
+            $allCategories = TaxJar::getInstance()->getApi()->getCategories();
+        } catch (\Exception $exception) {
+            return $this->asJson(['success' => false]);
+        }
+
 
         foreach ($allCategories as $taxJarCategory) {
             $handle = $taxJarCategory->product_tax_code;
