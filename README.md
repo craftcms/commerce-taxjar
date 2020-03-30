@@ -66,3 +66,10 @@ sure to set that up too.
 
 To see all the data from the TaxJar API response, take a look in the `sourceSnapshot` variable 
 within the adjustment created. 
+
+## Features
+
+    * [x] Pull live rates for a cart from TaxJar.
+    * [x] Replace the built in tax engine in Craft Commerce
+    * [] Sync completed orders with TaxJar for reporting purposes
+    * [ ] Sync customers TaxJar for reporting and tax exemption purposes
