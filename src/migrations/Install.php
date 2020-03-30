@@ -54,16 +54,7 @@ class Install extends Migration
      */
     public function createTables()
     {
-        $this->createTable('{{%commerce_taxjar_categories}}', [
-            'id' => $this->primaryKey(),
-            'taxJarCategoryId' => $this->integer(),
-            'taxJarCategoryName' => $this->text(),
-            'taxJarCategoryDescription' => $this->text(),
-            'taxCategoryId' => $this->integer(),
-            'dateCreated' => $this->dateTime()->notNull(),
-            'dateUpdated' => $this->dateTime()->notNull(),
-            'uid' => $this->uid(),
-        ]);
+
     }
 
     /**
@@ -71,8 +62,6 @@ class Install extends Migration
      */
     public function dropTables()
     {
-        $this->dropTableIfExists('{{%commerce_taxjar_categories}}');
-
         return null;
     }
 
@@ -96,7 +85,7 @@ class Install extends Migration
      */
     public function addForeignKeys()
     {
-        $this->addForeignKey(null, '{{%commerce_taxjar_categories}}', ['taxCategoryId'], '{{%commerce_taxcategories}}', ['id'], 'SET NULL');
+
     }
 
     /**
@@ -104,10 +93,7 @@ class Install extends Migration
      */
     public function dropForeignKeys()
     {
-        if ($this->_tableExists('{{%commerce_taxjar_categories}}')) {
-            MigrationHelper::dropAllForeignKeysToTable('{{%commerce_taxjar_categories}}', $this);
-            MigrationHelper::dropAllForeignKeysOnTable('{{%commerce_taxjar_categories}}', $this);
-        }
+
     }
 
     /**

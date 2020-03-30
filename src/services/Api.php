@@ -23,7 +23,7 @@ class Api extends Component
     // =========================================================================
 
     /**
-     * @var bool
+     * @var Client
      */
     private $_client;
 
@@ -41,5 +41,13 @@ class Api extends Component
     public function getCategories()
     {
         return $this->_client->categories();
+    }
+
+    /**
+     * @return Client
+     */
+    public function getClient()
+    {
+        return $this->_client;
     }
 }
