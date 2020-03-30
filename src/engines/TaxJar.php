@@ -29,6 +29,9 @@ class TaxJar implements TaxEngineInterface
         return 'TaxJar Engine';
     }
 
+    /**
+     * @return string
+     */
     public function taxAdjusterClass(): string
     {
         return TaxJarAdjuster::class;
