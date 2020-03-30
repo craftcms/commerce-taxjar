@@ -69,8 +69,8 @@ within the adjustment created.
 
 ## Features
 
-    * [x] Pull live rates for a cart from TaxJar.
-    * [x] Replace the built in tax engine in Craft Commerce
-    * [x] Sync tax categories with TaxJar
-    * [] Sync completed orders with TaxJar for reporting purposes
-    * [ ] Sync customers TaxJar for reporting and tax exemption purposes
+- [x] Pull live rates for a cart from TaxJar.
+- [x] Replace the built in tax engine in Craft Commerce
+- [x] Sync tax categories with TaxJar
+- [ ] Sync completed orders with TaxJar for reporting purposes
+- [ ] Sync customers TaxJar for reporting and tax exemption purposes
