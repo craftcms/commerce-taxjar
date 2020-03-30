@@ -6,7 +6,7 @@ This plugin provides a tax integration between [Craft Commerce](https://craftcms
 
 ## Requirements
 
-This plugin requires Craft CMS 3.1.20 or later.
+This plugin requires Craft Commerce 3.1 or later.
 
 ## Installation
 
