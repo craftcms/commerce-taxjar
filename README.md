@@ -33,3 +33,16 @@ composer require craftcms/commerce-taxjar
 
 ## Configuration
 
+This plugin will replace the built-in tax engine in Craft Commerce. 
+Any current tax rates you have configured will be ignored (hidden), as well as tax zones.
+
+Tax categories are still used but you can not create any manually, you must sync the tax categories 
+from TaxJar. Press the sync button at the top of the tax categories index page to bring down the latest categories.
+
+Once you have the TaxJar tax categories, you can decide to edit them and add them to your product types.
+
+The plugin will use your Store Location as the 'From' address supplied to TaxJar, so make 
+sure to set that up.
+
+To see all the data from the TaxJar API response, take a look in the `sourceSnapshot` variable 
+within the adjustment created. 
