@@ -32,7 +32,7 @@ class Api extends Component
      */
     public function init()
     {
-        $this->_client = Client::withApiKey('8bfb0693f9dabfb8df82021456a08f15');
+        $this->_client = Client::withApiKey('');
     }
 
     /**
