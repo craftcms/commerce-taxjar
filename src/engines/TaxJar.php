@@ -101,6 +101,9 @@ class TaxJar implements TaxEngineInterface
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function editTaxZones(): bool
     {
         return false;
