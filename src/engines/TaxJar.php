@@ -20,7 +20,6 @@ use craft\commerce\taxjar\web\assets\taxjar\TaxJar as TaxJarAsset;
  */
 class TaxJar implements TaxEngineInterface
 {
-
     /**
      * @inheritDoc
      */
@@ -35,19 +34,6 @@ class TaxJar implements TaxEngineInterface
     public function taxAdjusterClass(): string
     {
         return TaxJarAdjuster::class;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function viewTaxRates(): bool
-    {
-        return false;
-    }
-
-    public function editTaxRates(): bool
-    {
-        return false;
     }
 
     /**
@@ -112,16 +98,69 @@ class TaxJar implements TaxEngineInterface
     /**
      * @inheritDoc
      */
+    public function createTaxZones(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function deleteTaxZones(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function taxZoneActionHtml(): string
+    {
+        return '';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function viewTaxRates(): bool
+    {
+        return false;
+    }
+
+    public function editTaxRates(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createTaxRates(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function deleteTaxRates(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function taxRateActionHtml(): string
+    {
+        return '';
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function cpTaxNavSubItems(): array
     {
         return [];
-
-//        return [
-//            'taxjar' => [
-//                'title' => 'TaxJar',
-//                'minEdition' => 'pro',
-//                'url' => '#'
-//            ]
-//        ];
     }
 }
