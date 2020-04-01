@@ -23,7 +23,7 @@ use TaxJar\Exception;
  * Tax Adjustments
  *
  * @author Pixel & Tonic, Inc. <support@pixelandtonic.com>
- * @since 2.0
+ * @since 1.0
  *
  * @property Validator $vatValidator
  */

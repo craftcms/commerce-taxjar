@@ -29,6 +29,9 @@ class TaxJar implements TaxEngineInterface
         return 'TaxJar Engine';
     }
 
+    /**
+     * @inheritDoc
+     */
     public function taxAdjusterClass(): string
     {
         return TaxJarAdjuster::class;
@@ -98,6 +101,9 @@ class TaxJar implements TaxEngineInterface
         return false;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function editTaxZones(): bool
     {
         return false;

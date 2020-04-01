@@ -28,7 +28,7 @@ use yii\base\Event;
  *
  * @author    Pixel & Tonic
  * @package   TaxJar
- * @since     1.0.0
+ * @since     1.0
  *
  * @property \craft\commerce\taxjar\services\Api $api
  */

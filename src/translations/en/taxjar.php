@@ -11,7 +11,7 @@
 /**
  * @author    Pixel & Tonic
  * @package   TaxJar
- * @since     1.0.0
+ * @since     1.0
  */
 return [
     'TaxJar plugin loaded' => 'TaxJar plugin loaded',

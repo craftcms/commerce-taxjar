@@ -14,7 +14,7 @@ use craft\commerce\base\Model;
  * Settings model.
  *
  * @author Pixel & Tonic, Inc. <support@pixelandtonic.com>
- * @since 2.0
+ * @since 1.0
  */
 class Settings extends Model
 {
