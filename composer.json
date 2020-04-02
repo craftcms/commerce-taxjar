@@ -11,8 +11,8 @@
         "taxjar"
     ],
     "support": {
-        "docs": "http://github.com/craftcms/commerce-taxjar",
-        "issues": "http://github.com/craftcms/commerce-taxjar/issues"
+        "docs": "https://github.com/craftcms/commerce-taxjar/blob/master/README.md",
+        "issues": "https://github.com/craftcms/commerce-taxjar/issues"
     },
     "license": "MIT",
     "authors": [
