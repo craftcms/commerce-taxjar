@@ -85,14 +85,15 @@ class TaxJar extends Component implements AdjusterInterface
         try {
             $orderTaxes = $this->_getOrderTaxData();
         } catch (Exception $e) {
-            Craft::error('TaxJar API error code: ' . $e->getStatusCode() . ' Message: ' . $e->getMessage(), 'commerce-taxjar');
+            $message = 'TaxJar API error code: ' . $e->getStatusCode() . ' Message: ' . $e->getMessage();
+            Craft::error($message, 'commerce-taxjar');
 
-            if (Craft::$app->config->general->devMode) {
+            if (TaxJarPlugin::getInstance()->getSettings()->useSandbox) {
                 $adjustment = new OrderAdjustment();
                 $adjustment->type = self::ADJUSTMENT_TYPE;
                 $adjustment->name = Craft::t('commerce', 'TaxJar Error');
                 $adjustment->amount = 0;
-                $adjustment->description = $e->getMessage();
+                $adjustment->description = $message;
                 $adjustment->setOrder($this->_order);
                 $adjustment->sourceSnapshot = [];
 
