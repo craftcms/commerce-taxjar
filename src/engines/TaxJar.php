@@ -74,6 +74,11 @@ class TaxJar implements TaxEngineInterface
      */
     public function taxCategoryActionHtml(): string
     {
+        Craft::$app->getView()->registerTranslations('commerce', [
+            'Categories Updated. Reloading page.',
+            'Categories update failed. Make sure you are not in sandbox mode.'
+        ]);
+
         Craft::$app->getView()->registerAssetBundle(TaxJarAsset::class);
 
         return '<a href="#" class="taxjar-sync-categories-btn btn reload icon">Sync TaxJar Categories</a>';
