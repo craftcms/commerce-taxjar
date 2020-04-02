@@ -24,6 +24,11 @@ class Settings extends Model
     public $apiKey;
 
     /**
+     * @var bool
+     */
+    public $useSandbox = false;
+
+    /**
      * @inheritdoc
      */
     public function defineRules(): array
