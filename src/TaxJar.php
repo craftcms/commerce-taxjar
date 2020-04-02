@@ -64,58 +64,7 @@ class TaxJar extends BasePlugin
         Event::on(Taxes::class, Taxes::EVENT_REGISTER_TAX_ENGINE, static function(TaxEngineEvent $e) {
             $e->engine = new TaxJarEngine;
         });
-
-        if (true == false) {// Disable until we support order lodging
-            Event::on(Order::class, Order::EVENT_AFTER_ORDER_PAID, static function(Event $e) {
-
-                /** @var Order $order */
-                $order = $e->sender;
-
-                /** @var Address $address */
-                $address = $order->getShippingAddress();
-
-                if (Plugin::getInstance()->getSettings()->useBillingAddressForTax) {
-                    $address = $order->getBillingAddress();
-                }
-
-                if (!$address) {
-                    Craft::error('No address on order, can not submit tax transaction to TaxJar', 'commerce-taxjar');
-                    return;
-                }
-
-                $storeLocation = Plugin::getInstance()->getAddresses()->getStoreLocationAddress();
-
-                if (!$storeLocation) {
-                    Craft::error('No store location set up, can not submit tax transaction to TaxJar', 'commerce-taxjar');
-                    return;
-                }
-
-                $lineItems = [];
-
-                foreach ($order->getLineItems() as $item) {
-                    $lineItems[] = [
-                        'quantity' => $item->qty,
-                        'product_identifier' => $item->SKU,
-                        'description' => $item->description,
-                        'unit_price' => $item->salePrice
-                    ];
-                }
-
-                $taxJarOrder = TaxJar::getInstance()->getApi()->getClient()->createOrder([
-                    'transaction_id' => $order->id,
-                    'transaction_date' => $order->datePaid,
-                    'from_state' => $storeLocation->getState()->abbreviation ?? $storeLocation->getStateText(),
-                    'from_zip' => $storeLocation->zipCode,
-                    'from_country' => $storeLocation->getCountry()->iso ?? '',
-                    'to_country' => $address->getCountry()->iso ?? '',
-                    'to_zip' => $address->zipCode,
-                    'to_state' => $address->getState()->abbreviation ?? $address->getStateText(),
-                    'shipping' => $order->getTotalShippingCost(),
-                    'sales_tax' => $order->getTotalTax(),
-                    'line_items' => $lineItems
-                ]);
-            });
-        }
+        
     }
 
     /**
