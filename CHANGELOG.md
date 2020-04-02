@@ -1,6 +1,5 @@
 # Release Notes for Craft Commerce
 
-## 1.0.0 - 2020-04-01
+## 1.0.0 - 2020-04-02
 
-### Added
-- Initial release
+- Initial release.
