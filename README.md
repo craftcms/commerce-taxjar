@@ -4,9 +4,11 @@
 
 This plugin provides a tax integration between [Craft Commerce](https://craftcms.com/commerce) and [TaxJar](https://www.taxjar.com/).
 
+It replaces Craft Commerce’s built-in tax engine, offloading the work of managing tax rates, tax zones, and tax categories to TaxJar.
+
 ## Requirements
 
-This plugin requires Craft Commerce 3.1 or later.
+This plugin requires Craft Commerce (Pro edition) 3.1 or later.
 
 ## Installation
 
@@ -31,43 +33,54 @@ composer require craftcms/commerce-taxjar
 ./craft install/plugin commerce-taxjar
 ```
 
-## Configuration
+## Configuration & Setup
 
-This plugin will replace the built-in tax engine in Craft Commerce. 
-Any current tax rates you have configured will be ignored (hidden), as well as tax zones.
+### Step 1: Configure the plugin
 
-Tax categories are still used but you can not create any manually, you must sync the tax categories 
-from TaxJar.
+The plugin has two TaxJar API connection settings. To set them, follow these steps: 
 
-Setup:
+1. Define new `TAXJAR_API_KEY` and `TAXJAR_SANDBOX` environment variables in your `.env` file (or wherever you manage your environment variables).
 
-1. The first thing you will need to do is add your TaxJar API key to the plugin config.
+   ```
+   # Set to your TaxJar API key
+   TAXJAR_API_KEY="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   
+   # Set to 0 or 1 depending on whether the sandbox API endpoint should be used
+   TAXJAR_SANDBOX="1"
+   ```
 
-Make a `commerce-taxjar.php` file in your `config/` directory with this as the contents:
+2. Create a `config/commerce-taxjar.php` file with `apiKey` and `useSandbox` settings, which pull in the environment variables.
 
-```php
-<?php
+   ```php
+   <?php
+   
+   return [
+       'apiKey' => getenv('TAXJAR_API_KEY'),
+       'useSandbox' => (bool)getenv('TAXJAR_SANDBOX'),
+   ];
+   ```
 
-return [
-        'apiKey' => 'KEY_HERE'
-];
-```
+### Step 2: Sync your tax categories
 
-You can use an environment variable as the value if you wish.
+To sync your tax categories with TaxJar, go to Commerce → Tax → Tax Categories in your control panel, and click on the “Sync” button.
 
-When your site is in `devMode`, the TaxJar sandbox API endpoint is used. 
+Once the sync is complete, you will be free to edit the synced tax categories, and assign them to products as you normally would.
 
-2. Press the sync button at the top of the tax categories index page to bring down the latest categories.
-Once you have the TaxJar tax categories, you can edit them and add them to your product types. 
-Do not change the handles, as this will cause duplicate categories to be created when you sync next.
+> **Warning:** Don’t change the tax category handles, as that will cause duplicate tax categories to appear the next time you sync. 
 
-3. The plugin will use your Store Location as the 'From' address supplied to TaxJar, so make 
-sure to set that up too.
+### Step 4: Check your store location
 
-To see all the data from the TaxJar API response, take a look in the `sourceSnapshot` variable 
-within the adjustment created. 
+Go to Commerce → Store Settings → Store Location, and ensure that everything is set correctly there. The plugin will use this info to populate the _from_ address when getting tax info from TaxJar.
 
-## Features
+## Usage
+
+Once the plugin is set up properly, tax adjustments will be added to new orders automatically, per the line items’ tax categories.
+
+When the TaxJar API is queried for tax info, the full API response is JSON-encoded and stored in the tax adjustment’s `sourceSnapshot` value.
+
+---
+
+## Feature Roadmap
 
 - [x] Pull live rates for a cart from TaxJar.
 - [x] Replace the built in tax engine in Craft Commerce
