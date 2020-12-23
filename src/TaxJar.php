@@ -64,6 +64,16 @@ class TaxJar extends BasePlugin
         Event::on(Taxes::class, Taxes::EVENT_REGISTER_TAX_ENGINE, static function(TaxEngineEvent $e) {
             $e->engine = new TaxJarEngine;
         });
+
+        Event::on(
+            Order::class,
+            Order::EVENT_AFTER_ORDER_PAID,
+            function(Event $event) {
+                // @var Order $order
+                $order = $event->sender;
+                Api::createOrder($order);
+            }
+        );
         
     }
 
