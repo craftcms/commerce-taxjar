@@ -58,4 +58,36 @@ class Api extends Component
     {
         return $this->_client;
     }
+
+    /**
+     * @param $order
+     * @return mixed
+     */
+    public function createOrder($order)
+    {
+        $taxOrderData = [
+          'transaction_id' => $order->id,
+          'transaction_date' => $order->datePaid->format('Y/m/d'),
+          'to_country' => $order->shippingAddress->conutry->iso,
+          'to_zip' => $order->shippingAddress->zipCode,
+          'to_state' => $order->shippingAddress->state ? $order->shippingAddress->state->abbreviation : $order->shippingAddress->stateName,
+          'to_city' => $order->shippingAddress->city,
+          'to_street' => $order->shippingAddress->address1,
+          'amount' => $order->total,
+          'shipping' => $order->totalShippingCost,
+          'sales_tax' => $order->totalTax,
+          'line_items' => []
+        ];
+        foreach ($order->lineItems as $lineItem)
+        {
+            $taxOrderData['line_items'][] = [
+                'quantity' => $lineItem->qty,
+                'product_identifier' => $lineItem->sku,
+                'description' => $lineItem->description,
+                'unit_price' => $lineItem->total,
+                'sales_tax' => $lineItem->tax
+            ];
+        }
+        return $this->_client->createOrder($taxOrderData);
+    }
 }
