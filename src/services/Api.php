@@ -68,7 +68,7 @@ class Api extends Component
         $taxOrderData = [
           'transaction_id' => $order->id,
           'transaction_date' => $order->datePaid->format('Y/m/d'),
-          'to_country' => $order->shippingAddress->conutry->iso,
+          'to_country' => $order->shippingAddress->country->iso,
           'to_zip' => $order->shippingAddress->zipCode,
           'to_state' => $order->shippingAddress->state ? $order->shippingAddress->state->abbreviation : $order->shippingAddress->stateName,
           'to_city' => $order->shippingAddress->city,
