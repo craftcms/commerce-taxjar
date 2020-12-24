@@ -73,7 +73,7 @@ class Api extends Component
           'to_state' => $order->shippingAddress->state ? $order->shippingAddress->state->abbreviation : $order->shippingAddress->stateName,
           'to_city' => $order->shippingAddress->city,
           'to_street' => $order->shippingAddress->address1,
-          'amount' => $order->total,
+          'amount' => $order->total - $order->totalTax,
           'shipping' => $order->totalShippingCost,
           'sales_tax' => $order->totalTax,
           'line_items' => []
