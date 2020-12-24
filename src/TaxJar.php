@@ -71,7 +71,7 @@ class TaxJar extends BasePlugin
             function(Event $event) {
                 // @var Order $order
                 $order = $event->sender;
-                Api::createOrder($order);
+                $this->getApi()->createOrder($order);
             }
         );
         
