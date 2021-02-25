@@ -8,6 +8,7 @@
 namespace craft\commerce\taxjar\engines;
 
 use Craft;
+use craft\base\Component;
 use craft\commerce\base\TaxEngineInterface;
 use craft\commerce\taxjar\adjusters\TaxJar as TaxJarAdjuster;
 use craft\commerce\taxjar\web\assets\taxjar\TaxJar as TaxJarAsset;
@@ -18,7 +19,7 @@ use craft\commerce\taxjar\web\assets\taxjar\TaxJar as TaxJarAsset;
  * @package craft\commerce\taxjar\engines
  * @since 1.0
  */
-class TaxJar implements TaxEngineInterface
+class TaxJar extends Component implements TaxEngineInterface
 {
     /**
      * @inheritDoc
