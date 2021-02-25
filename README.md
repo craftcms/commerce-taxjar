@@ -30,7 +30,7 @@ cd /path/to/my-project.test
 composer require craftcms/commerce-taxjar
 
 # tell Craft to install the plugin
-./craft install/plugin commerce-taxjar
+php craft install/plugin commerce-taxjar
 ```
 
 ## Configuration & Setup

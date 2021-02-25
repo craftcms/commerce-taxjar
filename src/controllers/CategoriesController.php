@@ -44,19 +44,26 @@ class CategoriesController extends BaseCpController
 
         foreach ($allCategories as $taxJarCategory) {
             $handle = $taxJarCategory->product_tax_code;
-            $existing = Plugin::getInstance()->getTaxCategories()->getTaxCategoryByHandle($handle);
+            $category = Plugin::getInstance()->getTaxCategories()->getTaxCategoryByHandle($handle);
 
-            if (!$existing) {
-                $newCategory = new TaxCategory();
-                $newCategory->name = $taxJarCategory->name;
-                $newCategory->description = $taxJarCategory->description;
-                $newCategory->handle = $handle;
-                $newCategory->default = false;
-                if (!Plugin::getInstance()->getTaxCategories()->saveTaxCategory($newCategory)) {
+            if (!$category) {
+                $category = new TaxCategory();
+
+                $category->default = false;
+                $category->handle = $handle;
+                $category->name = $taxJarCategory->name;
+                $category->description = $taxJarCategory->description;
+
+                if (strlen($category->description) >= 255) {
+                    $category->description = rtrim(substr($category->description, 0, 252)) . '...';
+                }
+
+                if (!Plugin::getInstance()->getTaxCategories()->saveTaxCategory($category)) {
                     Craft::error('Could not save tax category from taxjar.');
                     return $this->asJson(['success' => false]);
-                }
             }
+            }
+
         }
 
         return $this->asJson(['success' => true]);

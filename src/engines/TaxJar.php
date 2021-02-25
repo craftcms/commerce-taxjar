@@ -8,6 +8,7 @@
 namespace craft\commerce\taxjar\engines;
 
 use Craft;
+use craft\base\Component;
 use craft\commerce\base\TaxEngineInterface;
 use craft\commerce\taxjar\adjusters\TaxJar as TaxJarAdjuster;
 use craft\commerce\taxjar\web\assets\taxjar\TaxJar as TaxJarAsset;
@@ -18,7 +19,7 @@ use craft\commerce\taxjar\web\assets\taxjar\TaxJar as TaxJarAsset;
  * @package craft\commerce\taxjar\engines
  * @since 1.0
  */
-class TaxJar implements TaxEngineInterface
+class TaxJar extends Component implements TaxEngineInterface
 {
     /**
      * @inheritDoc
@@ -89,7 +90,7 @@ class TaxJar implements TaxEngineInterface
 
         Craft::$app->getView()->registerAssetBundle(TaxJarAsset::class);
 
-        return '<a href="#" class="taxjar-sync-categories-btn btn reload icon">Sync TaxJar Categories</a>';
+        return '<div id="taxjar-sync-spinner" class="spinner hidden"></div> <a href="#" id="taxjar-sync-categories-btn" class="btn reload icon">Sync TaxJar Categories</a>';
     }
 
     /**
