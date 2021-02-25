@@ -82,7 +82,7 @@ class TaxJar extends Component implements TaxEngineInterface
 
         Craft::$app->getView()->registerAssetBundle(TaxJarAsset::class);
 
-        return '<a href="#" class="taxjar-sync-categories-btn btn reload icon">Sync TaxJar Categories</a>';
+        return '<div id="taxjar-sync-spinner" class="spinner hidden"></div> <a href="#" id="taxjar-sync-categories-btn" class="btn reload icon">Sync TaxJar Categories</a>';
     }
 
     /**
