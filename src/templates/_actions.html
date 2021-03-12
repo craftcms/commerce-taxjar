@@ -1,0 +1,29 @@
+<div class="spacer"></div>
+<div class="order-flex taxjar">
+    <div class="btngroup taxjar">
+        <div class="btn menubtn">TaxJar</div>
+        <div class="menu">
+            <ul>
+                <li>
+                    <a href="send" class="taxjar-action">Send Transaction</a>
+                </li>
+                <li>
+                    <a href="refund" class="taxjar-action">Create Refund</a>
+                </li>
+                <li>
+                    <a href="delete" class="taxjar-action error">Delete Transaction</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% js %}
+    $(document).ready(function () {
+        new Craft.Commerce.TaxJarRefund({
+            orderId: {{ orderId|e('js') }},
+            locale: "{{ craft.app.language|e('js') }}",
+            currency: "{{ order.currency|e('js') }}"
+        });
+    });
+{% endjs %}
