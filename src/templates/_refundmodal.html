@@ -1,0 +1,362 @@
+{% import "_includes/forms" as forms %}
+{% set orderTax = order.totalTax %}
+{% set step = 1 %}
+{% set decimals = craft.commerce.getCurrencies().getCurrencyByIso(order.currency).minorUnit %}
+{% if decimals > 0 %}
+    {% set step = 1 / (10 ** decimals) %}
+{% endif %}
+
+<div class="pane">
+    <div id="taxjar-refund-form">
+        <form method="POST" id="form-taxjar-refund">
+            <input type="hidden" name="action" value="commerce-taxjar/orders/refund">
+            {{ redirectInput(order.cpEditUrl) }}
+            <input type="hidden" name="cancelUrl" value="{{ order.cpEditUrl|hash }}">
+            <input type="hidden" name="orderId" value="{{ order.id }}">
+            {{ csrfInput() }}
+
+            <div class="main">
+                <div class="order-details">
+                    <div>
+                        <div class="order-flex order-box-sizing">
+                            <div class="line-items-heading orderedit-border-color w-1/4">
+                                <h4 class="extralight">{{ 'Item'|t('app') }}</h4>
+                            </div>
+                            <div class="order-flex order-box-sizing w-3/4">
+                                <div class="line-items-heading orderedit-border-color w-2/5">
+                                    <h4 class="extralight">{{ 'Unit Price'|t('app') }}</h4>
+                                </div>
+                                <div class="line-items-heading orderedit-border-color order-flex-grow">
+                                    <h4 class="extralight">{{ 'Qty'|t('app') }}<span class="info">Numbers listed below are item quantities not yet refunded.</span></h4>
+                                </div>
+                                <div class="line-items-heading orderedit-border-color order-flex-grow text-right">
+                                    <h4 class="extralight">{{ 'Total'|t('app') }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="line-items">
+                        {% for lineItem in order.lineItems %}
+                        {% set orderTax = orderTax - lineItem.tax %}
+                        {% set inputClasses = ['text', 'fullwidth'] %}
+                        {% set qty = remaining[lineItem.id] ?? lineItem.qty %}
+                        {% if qty == 0 %}
+                            {% set inputClasses = inputClasses|merge(['disabled']) %}
+                        {% endif %}
+                        {% spaceless %}
+                        <div class="line-item">
+                            <div class="absolute line-item-bg"></div>
+                            <div class="relative">
+                                <div class="order-block py order-flex order-box-sizing">
+                                    <div class="w-1/4">
+                                        <h3 class="order-title">{{ lineItem.description }}</h3>
+                                        <div><code class="extralight">{{ lineItem.sku }}</code></div>
+                                    </div>
+                                    <div class="w-3/4">
+                                        <div class="order-flex pb">
+                                            <ul class="w-2/5 v-center">
+                                                <li class="order-flex order-flex-wrap">
+                                                    <label for="salePrice" class="light">{{ 'Sale Price'|t('app') }}</label>
+                                                    <div>{{ lineItem.salePrice|commerceCurrency(order.currency, true) }}</div>
+                                                </li>
+                                            </ul>
+                                            <div class="order-flex-grow">
+                                                <div class="order-flex qty">
+                                                    <div id="qty-{{ lineItem.id }}-field">
+                                                        <div class="input ltr">
+                                                            {% set attributes = {
+                                                                    id: 'qty-' ~ lineItem.id,
+                                                                    class: inputClasses,
+                                                                    name: 'refunds[' ~ lineItem.id ~ '][qty]',
+                                                                    type: 'number',
+                                                                    min: 0,
+                                                                    max: qty,
+                                                                    step: 1,
+                                                                    autocomplete: 'off',
+                                                                    data: {
+                                                                        id: lineItem.id,
+                                                                        saleprice: lineItem.salePrice|commerceCurrency(order.currency, true, false),
+                                                                        unitdiscount: (lineItem.discount / lineItem.qty)|commerceCurrency(order.currency, true, false),
+                                                                        unittax: (lineItem.tax / lineItem.qty)|commerceCurrency(order.currency, true, false)
+                                                                    }
+                                                                } %}
+                                                            {% if qty == 0 %}
+                                                                {% set attributes = attributes|merge({ disabled: true}) %}
+                                                            {% endif %}
+                                                            <input{{ attr(attributes) }}>
+                                                        </div>
+                                                    </div>
+                                                    <span class="v-center">&ensp;/ {{ qty }}</span>
+                                                </div>
+                                            </div>
+                                            <div id="price-{{ lineItem.id }}" class="order-flex-grow text-right v-center">{{ 0|commerceCurrency(order.currency, true) }}</div>
+                                        </div>
+                                        <div class="order-block py order-flex">
+                                            <div class="w-full">
+                                                {% if lineItem.discount %}
+                                                <div class="adjustment order-flex">
+                                                    <div class="order-flex-grow"><span class="adjustment-type">{{ 'Discount'|t('app') }}</span>{{ (lineItem.discount / lineItem.qty)|commerceCurrency(order.currency, true) }}</div>
+                                                    <div id="discount-{{ lineItem.id }}" class="order-flex-grow text-right">{{ 0|commerceCurrency(order.currency, true) }}</div>
+                                                </div>
+                                                {% endif %}
+
+                                                <div class="adjustment order-flex">
+                                                    <div class="order-flex-grow v-center"><span class="adjustment-type">{{ 'Deduction'|t('app') }}</span><span class="info">Negative amount for restocking fee, return shipping, etc.</span></div>
+                                                    <div class="order-flex-grow">
+                                                        <div class="order-flex flex-field-right">
+                                                            <div id="deduction-{{ lineItem.id }}-field">
+                                                                <div class="input ltr">
+                                                                    {% set attributes = {
+                                                                        id: 'deduction-' ~ lineItem.id,
+                                                                        class: inputClasses,
+                                                                        name: 'refunds[' ~ lineItem.id ~ '][deduction]',
+                                                                        type: 'number',
+                                                                        min: 0,
+                                                                        max: 0,
+                                                                        step: step,
+                                                                        autocomplete: 'off',
+                                                                        data: {
+                                                                            id: lineItem.id
+                                                                        }
+                                                                    } %}
+                                                                    {% if qty == 0 %}
+                                                                        {% set attributes = attributes|merge({ disabled: true}) %}
+                                                                    {% endif %}
+                                                                    <input{{ attr(attributes) }}>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="adjustment order-flex">
+                                                    <div class="order-flex-grow"><span class="adjustment-type">{{ 'Tax'|t('app') }}</span>{{ (lineItem.tax / lineItem.qty)|commerceCurrency(order.currency, true) }}</div>
+                                                    <div id="tax-{{ lineItem.id }}" class="order-flex-grow text-right">{{ 0|commerceCurrency(order.currency, true) }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="order-block py text-right">
+                                            <div>
+                                                <strong id="subtotal-{{ lineItem.id }}" data-subtotal="0">{{ 0|commerceCurrency(order.currency, true) }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endspaceless %}
+                        {% endfor %}
+
+                        {% spaceless %}
+                        <div class="order-total-summary pt">
+                            <div class="order-flex justify-end">
+                                <div class="w-1/4">&nbsp;</div>
+                                <div class="w-3/4">
+                                    <div class="order-block py order-flex order-adjustments">
+                                        <div class="w-full">
+                                            {% if order.totalShippingCost %}
+                                            <div class="adjustment order-flex">
+                                                <div class="order-flex-grow v-center">
+                                                    <span class="adjustment-type">{{ 'Shipping'|t('app') }}</span>{{ order.totalShippingCost|commerceCurrency(order.currency, true) }}
+                                                </div>
+                                                <div class="order-flex-grow">
+                                                    <div class="order-flex flex-field-right">
+                                                        <div id="shipping-order-field">
+                                                            <div class="input ltr">
+                                                                {% set attributes = {
+                                                                        id: 'shipping-order',
+                                                                        class: [
+                                                                            'text',
+                                                                            'fullwidth'
+                                                                        ],
+                                                                        name: 'shipping',
+                                                                        type: 'number',
+                                                                        min: 0,
+                                                                        max: order.totalShippingCost,
+                                                                        step: step,
+                                                                        autocomplete: 'off'
+                                                                    } %}
+                                                                <input{{ attr(attributes) }}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            <div class="adjustment order-flex">
+                                                <div class="order-flex-grow v-center">
+                                                    <span class="adjustment-type">{{ 'Tax'|t('app') }}</span>{{ orderTax|commerceCurrency(order.currency, true) }}
+                                                </div>
+                                                {% if orderTax > 0 %}
+                                                <div class="order-flex-grow">
+                                                    <div class="order-flex flex-field-right">
+                                                        <div id="tax-order-field">
+                                                            <div class="input ltr">
+                                                                {% set attributes = {
+                                                                        id: 'tax-order',
+                                                                        class: [
+                                                                            'text',
+                                                                            'fullwidth'
+                                                                        ],
+                                                                        name: 'tax',
+                                                                        type: 'number',
+                                                                        min: 0,
+                                                                        max: orderTax,
+                                                                        step: step,
+                                                                        autocomplete: 'off'
+                                                                    } %}
+                                                                <input{{ attr(attributes) }}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% else %}
+                                                <div class="order-flex-grow text-right">{{ 0|commerceCurrency(order.currency, true) }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="order-block py">
+                                        <div class="order-flex-grow">
+                                            <div class="order-flex">
+                                                <div id="refundNote-field">
+                                                    <div class="input ltr">
+                                                        {% set attributes = {
+                                                            id: 'refundNote',
+                                                            class: [
+                                                                'text',
+                                                                'fullwidth'
+                                                            ],
+                                                            name: 'refundNote',
+                                                            autocomplete: 'off',
+                                                            placeholder: 'Refund Note'
+                                                        } %}
+                                                        <input{{ attr(attributes) }}>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endspaceless %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="buttons right">
+                    <input type="submit" class="btn submit" value="{{ 'Refund'|t('app') }} {{ 0|commerceCurrency(order.currency, convert=true) }}">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% css %}
+#form-taxjar-refund .order-block .w-1\/4 {
+padding-right: 7px;
+}
+
+#taxjarrefundmodal .pane {
+min-width: 600px;
+height: 100%;
+}
+
+#taxjar-refund-form,
+#form-taxjar-refund,
+#form-taxjar-refund .order-details {
+height: 100%;
+}
+
+#taxjar-refund-form .main {
+height: calc(100% - 62px + 24px);
+}
+
+#taxjar-refund-form .line-items-heading {
+border-bottom: 1px solid #eee;
+}
+
+#taxjar-refund-form .line-items {
+height: calc(100% - 45px);
+overflow-y: scroll;
+{# need the styles below for scroll bar #}
+overflow-x: hidden;
+margin-right: -15px;
+padding-right: 15px;
+}
+
+#taxjar-refund-form .line-item:first-child .relative > .order-block:first-child {
+border-top: none;
+}
+
+#taxjar-refund-form .adjustment:last-child {
+padding-bottom: 0;
+}
+
+#taxjar-refund-form .adjustment-type {
+padding-right: 10px;
+}
+
+#taxjar-refund-form .order-total-summary {
+margin-bottom: 24px;
+}
+
+#taxjar-refund-form .footer {
+margin: 0 -24px -24px;
+}
+
+input[id^=qty-] {
+width: 4.5em;
+}
+
+input[id^=deduction-],
+input#tax-order,
+input#shipping-order {
+width: 8.5em;
+text-align: right;
+-moz-appearance: textfield;
+}
+
+input[id^=deduction-]::-webkit-outer-spin-button,
+input[id^=deduction-]::-webkit-inner-spin-button,
+input#tax-order::-webkit-outer-spin-button,
+input#tax-order::-webkit-inner-spin-button,
+input#shipping-order::-webkit-outer-spin-button,
+input#shipping-order::-webkit-inner-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+
+.flex-field-right {
+justify-content: flex-end;
+}
+
+.v-center {
+margin: auto 0;
+}
+
+.order-block.order-adjustments {
+border-top: none;
+padding-top: 0;
+}
+
+#refundNote-field {
+width: 100%;
+}
+{% endcss %}
+
+{% js %}
+$('#form-taxjar-refund').on('submit', function (ev) {
+$form = $(this);
+
+if ($form.data('processing')) {
+ev.preventDefault();
+
+return false;
+}
+
+$form.data('processing', true);
+});
+{% endjs %}

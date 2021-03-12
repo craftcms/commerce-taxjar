@@ -1,0 +1,13 @@
+#order-secondary-actions {
+    display: flex;
+}
+
+.btngroup.taxjar {
+    position: relative;
+}
+
+.btngroup.taxjar .spinner {
+    position: absolute;
+    top: 0;
+    right: -29px;
+}
