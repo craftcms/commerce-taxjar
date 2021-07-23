@@ -34,17 +34,10 @@ use yii\base\Event;
  */
 class TaxJar extends BasePlugin
 {
-
-    // Public Properties
-    // =========================================================================
-
     /**
      * @var string
      */
     public $schemaVersion = '1.0.0';
-
-    // Public Methods
-    // =========================================================================
 
     /**
      *
@@ -60,10 +53,14 @@ class TaxJar extends BasePlugin
 
     public function _registerHandlers()
     {
-        // We want to be the tax engine for commerce
-        Event::on(Taxes::class, Taxes::EVENT_REGISTER_TAX_ENGINE, static function(TaxEngineEvent $e) {
-            $e->engine = new TaxJarEngine;
-        });
+        // We want to be the tax engine for Commerce
+        Event::on(
+            Taxes::class,
+            Taxes::EVENT_REGISTER_TAX_ENGINE,
+            static function(TaxEngineEvent $e) {
+                $e->engine = new TaxJarEngine;
+            }
+        );
         
     }
 
@@ -93,9 +90,6 @@ class TaxJar extends BasePlugin
     {
         return new Settings();
     }
-
-    // Private Methods
-    // =========================================================================
 
     /**
      * Sets the components of the commerce plugin

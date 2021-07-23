@@ -23,9 +23,6 @@ use yii\base\Component;
  */
 class Api extends Component
 {
-    // Properties
-    // =========================================================================
-
     /**
      * @var Client
      */

@@ -19,9 +19,6 @@ use craft\helpers\MigrationHelper;
  */
 class Install extends Migration
 {
-    // Public Methods
-    // =========================================================================
-
     /**
      * @inheritdoc
      */
@@ -45,9 +42,6 @@ class Install extends Migration
 
         return true;
     }
-
-    // Protected Methods
-    // =========================================================================
 
     /**
      * Creates the tables for TaxJar
@@ -102,9 +96,6 @@ class Install extends Migration
     public function insertDefaultData()
     {
     }
-
-    // Private Methods
-    // =========================================================================
 
     /**
      * Returns if the table exists.

@@ -29,13 +29,7 @@ use TaxJar\Exception;
  */
 class TaxJar extends Component implements AdjusterInterface
 {
-    // Constants
-    // =========================================================================
-
     const ADJUSTMENT_TYPE = 'tax';
-
-    // Properties
-    // =========================================================================
 
     /**
      * @var Order
@@ -51,9 +45,6 @@ class TaxJar extends Component implements AdjusterInterface
      * @var mixed
      */
     private $_taxesByOrderHash;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @inheritdoc
