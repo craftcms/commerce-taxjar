@@ -101,7 +101,7 @@ class Api extends Component
     public function getAmountsParams(Order $order, bool $includeAll = true): array
     {
         return [
-            'amount' => $order->total - $order->totalTax,
+            'amount' => $order->getItemSubtotal() + $order->getTotalDiscount() + $order->getTotalShippingCost(),
             'shipping' => $order->getTotalShippingCost(),
             'line_items' => $this->getLineItemsParams($order->getLineItems(), $includeAll)
         ];
@@ -123,7 +123,7 @@ class Api extends Component
                 'id' => $lineItem->id ?: "temp-{$lineItem->orderId}-{$i}",
                 'quantity' => $lineItem->qty,
                 'unit_price' => $lineItem->salePrice,
-                'discount' => $lineItem->getDiscount() * -1,
+                'discount' => $lineItem->getDiscount() < 0 ? $lineItem->getDiscount() * -1 : null,
                 'product_tax_code' => $category && $category->handle !== 'general' ? $category->handle : null
             ];
 
