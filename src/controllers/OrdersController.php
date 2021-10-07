@@ -92,9 +92,9 @@ class OrdersController extends BaseCpController
 
             try {
                 if (!$existingRefund) {
-                    $client->createRefund(json_decode($refund->snapshot));
+                    $client->createRefund(json_decode($refund->snapshot, true));
                 } else {
-                    $client->updateRefund(json_decode($refund->snapshot));
+                    $client->updateRefund(json_decode($refund->snapshot, true));
                 }
             } catch (\Exception $exception) {
                 Craft::error($exception->getMessage(), __METHOD__);
@@ -219,6 +219,7 @@ class OrdersController extends BaseCpController
         });
         $shipping = (float)$this->request->getBodyParam('shipping');
         $tax = (float)$this->request->getBodyParam('tax');
+        $deduction = (float)$this->request->getBodyParam('deduction');
         $refundNote = $this->request->getBodyParam('refundNote');
 
         if (empty($refundItems) && empty($shipping) && empty($tax)) {
@@ -244,11 +245,11 @@ class OrdersController extends BaseCpController
                 ->select(['id'])
                 ->from('{{%taxjar_refunds}}')
                 ->where(['orderId' => $order->id])
-                ->all();
+                ->column();
             $refundedLineItems = null;
             if ($refundIds) {
                 $refundedLineItems = LineItem::find()
-                    ->where(['IN', 'refundId', array_column($refundIds, 'id')])
+                    ->where(['IN', 'refundId', $refundIds])
                     ->andWhere(['IN', 'lineItemId', $refundItemIds])
                     ->all();
             }
@@ -259,7 +260,8 @@ class OrdersController extends BaseCpController
                     if ($refundedLineItems) {
                         $refundedQty = 0;
                         foreach ($refundedLineItems as $item) {
-                            $refundedQty += $item->quantity;
+                            if ($item->lineItemId === $lineItem->id)
+                                $refundedQty += $item->quantity;
                         }
 
                         if ($refundedQty + $refundItems[$lineItem->id]['qty'] > $lineItem->qty) {
@@ -274,23 +276,17 @@ class OrdersController extends BaseCpController
                     $qtyDiscount = Currency::round($lineItem->discount * $qtyRatio);
 
                     $refundSubtotal = $qtySubtotal + $qtyDiscount;
-                    $refundTax = $lineItem->tax * $qtyRatio;
-
-                    if ($deduction = (float)$refundItems[$lineItem->id]['deduction']) {
-                        $original = $refundSubtotal;
-                        $refundSubtotal += $deduction;
-                        $refundTax = $refundTax * ($refundSubtotal / $original);
-                    }
+                    $refundTax = Currency::round($lineItem->tax * $qtyRatio);
 
                     $totalItems += $refundSubtotal;
-                    $totalTax += Currency::round($refundTax);
+                    $totalTax += $refundTax;
 
                     // Build line item params while we're here
                     $category = $taxCategories->getTaxCategoryById($lineItem->taxCategoryId);
                     $lineItemsParams[] = [
                         'id' => $lineItem->id,
                         'quantity' => $refundItems[$lineItem->id]['qty'],
-                        'unit_price' => ($qtySubtotal + $deduction) * -1,
+                        'unit_price' => $qtySubtotal * -1,
                         'discount' => $qtyDiscount,
                         'sales_tax' => $refundTax * -1,
                         'product_tax_code' => $category && $category->handle !== 'general' ? $category->handle : null,
@@ -301,7 +297,7 @@ class OrdersController extends BaseCpController
             }
         }
 
-        $totalRefund = $totalItems + $totalTax + $shipping;
+        $totalRefund = $totalItems + $totalTax + $shipping - $deduction;
         // Check that total refund doesn't exceed total paid
         if ($totalRefund > $order->totalPaid) {
             $this->setFailFlash(Craft::t('commerce-taxjar', 'Refund can not exceed total paid.'));
@@ -313,70 +309,67 @@ class OrdersController extends BaseCpController
             return $transaction->canRefund();
         });
 
-        if (empty($payments)) {
-            $this->setFailFlash(Craft::t('commerce-taxjar', 'No transactions available to be refunded.'));
-
-            return null;
-        }
-
-        $refundTransactions = [];
-        $toRefund = 0;
-        foreach ($payments as $payment) {
-            $max = $payment->getRefundableAmount();
-            $amount = min($max, $totalRefund);
-            $refundTransactions[] = ['payment' => $payment, 'amount' => $amount];
-            $toRefund += $amount;
-
-            if ($toRefund === $totalRefund)
-                break;
-        }
-
         $success = [];
         $fail = [];
-        foreach ($refundTransactions as $transaction) {
-            try {
-                $child = Plugin::getInstance()->getPayments()->refundTransaction(
-                    $transaction['payment'],
-                    $transaction['amount'],
-                    $refundNote
-                );
+        if (!empty($payments)) {
+            $refundTransactions = [];
+            $toRefund = 0;
+            foreach ($payments as $payment) {
+                $max = $payment->getRefundableAmount();
+                $amount = min($max, $totalRefund);
+                $refundTransactions[] = ['payment' => $payment, 'amount' => $amount];
+                $toRefund += $amount;
 
-                $message = $child->message ? ' (' . $child->message . ')' : '';
+                if ($toRefund === $totalRefund)
+                    break;
+            }
 
-                if ($child->status == TransactionRecord::STATUS_SUCCESS) {
-                    $child->order->updateOrderPaidInformation();
-                    $success[] = $child->id;
-                } else {
-                    Craft::error(Craft::t('commerce', 'Couldn’t refund transaction: {message}', [
-                        'message' => $message
-                    ]), __METHOD__);
+            foreach ($refundTransactions as $transaction) {
+                try {
+                    $child = Plugin::getInstance()->getPayments()->refundTransaction(
+                        $transaction['payment'],
+                        $transaction['amount'],
+                        $refundNote
+                    );
+
+                    $message = $child->message ? ' (' . $child->message . ')' : '';
+
+                    if ($child->status == TransactionRecord::STATUS_SUCCESS) {
+                        $child->order->updateOrderPaidInformation();
+                        $success[] = $child->id;
+                    } else {
+                        Craft::error(Craft::t('commerce', 'Couldn’t refund transaction: {message}', [
+                            'message' => $message
+                        ]), __METHOD__);
+
+                        $fail[] = [
+                            'transactionId' => $child->id,
+                            'amount' => $transaction['amount']
+                        ];
+                    }
+                } catch (RefundException $exception) {
+                    Craft::error($exception->getMessage(), __METHOD__);
 
                     $fail[] = [
                         'transactionId' => $child->id,
                         'amount' => $transaction['amount']
                     ];
                 }
-            } catch (RefundException $exception) {
-                Craft::error($exception->getMessage(), __METHOD__);
-
-                $fail[] = [
-                    'transactionId' => $child->id,
-                    'amount' => $transaction['amount']
-                ];
             }
-        }
 
-        if (empty($success)) {
-            $this->setFailFlash(Craft::t('commerce-taxjar', 'Unable to refund, please check error logs.'));
+            if (empty($success)) {
+                $this->setFailFlash(Craft::t('commerce-taxjar', 'Unable to refund, please check error logs.'));
 
-            return null;
+                return null;
+            }
         }
 
         $api = TaxJar::getInstance()->getApi();
         $from = $api->getFromParams();
         $to = $api->getToParams($order->getShippingAddress());
+        $transaction_id = count($success) ? implode('_', $success) : $order->id . '_refund_' . time();
         $refundParams = [
-            'transaction_id' => implode('_', $success),
+            'transaction_id' => $transaction_id,
             'transaction_date' => date('c'),
             'transaction_reference_id' => $order->id,
             'amount' => ($totalItems + $shipping) * -1,
@@ -397,6 +390,8 @@ class OrdersController extends BaseCpController
 
         if (!empty($fail)) {
             $this->setFailFlash(Craft::t('commerce-taxjar', 'Unable to fully refund, please check error logs.'));
+        } elseif (empty($success)) {
+            $this->setSuccessFlash(Craft::t('commerce-taxjar', 'Refund processed and sent. No transactions to refund.'));
         } else {
             $this->setSuccessFlash(Craft::t('commerce-taxjar', 'Refund processed and sent.'));
         }
@@ -407,21 +402,22 @@ class OrdersController extends BaseCpController
         $refund->amount = $refundParams['amount'];
         $refund->shipping = $refundParams['shipping'];
         $refund->salesTax = $refundParams['sales_tax'];
+        $refund->deduction = $deduction;
         $refund->snapshot = json_encode($refundData);
         $refund->save();
         $refundId = $refund->getPrimaryKey();
 
         $rows = [];
         foreach ($refundItems as $id => $item) {
-            $rows[] = [$id, $refundId, $item['qty'], (!empty($item['deduction']) ? $item['deduction'] : 0.0000)];
+            $rows[] = [$id, $refundId, $item['qty']];
         }
         Craft::$app->getDb()->createCommand()->batchInsert(
             '{{%taxjar_refund_lineitems}}',
-            ['lineItemId', 'refundId', 'quantity', 'deduction'],
+            ['lineItemId', 'refundId', 'quantity'],
             $rows
         )->execute();
 
-        $this->redirectToPostedUrl();
+        return $this->redirectToPostedUrl();
     }
 
     /**

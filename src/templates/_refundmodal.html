@@ -102,34 +102,6 @@
                                                 {% endif %}
 
                                                 <div class="adjustment order-flex">
-                                                    <div class="order-flex-grow v-center"><span class="adjustment-type">{{ 'Deduction'|t('app') }}</span><span class="info">Negative amount for restocking fee, return shipping, etc.</span></div>
-                                                    <div class="order-flex-grow">
-                                                        <div class="order-flex flex-field-right">
-                                                            <div id="deduction-{{ lineItem.id }}-field">
-                                                                <div class="input ltr">
-                                                                    {% set attributes = {
-                                                                        id: 'deduction-' ~ lineItem.id,
-                                                                        class: inputClasses,
-                                                                        name: 'refunds[' ~ lineItem.id ~ '][deduction]',
-                                                                        type: 'number',
-                                                                        min: 0,
-                                                                        max: 0,
-                                                                        step: step,
-                                                                        autocomplete: 'off',
-                                                                        data: {
-                                                                            id: lineItem.id
-                                                                        }
-                                                                    } %}
-                                                                    {% if qty == 0 %}
-                                                                        {% set attributes = attributes|merge({ disabled: true}) %}
-                                                                    {% endif %}
-                                                                    <input{{ attr(attributes) }}>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="adjustment order-flex">
                                                     <div class="order-flex-grow"><span class="adjustment-type">{{ 'Tax'|t('app') }}</span>{{ (lineItem.tax / lineItem.qty)|commerceCurrency(order.currency, true) }}</div>
                                                     <div id="tax-{{ lineItem.id }}" class="order-flex-grow text-right">{{ 0|commerceCurrency(order.currency, true) }}</div>
                                                 </div>
@@ -213,6 +185,33 @@
                                                 {% else %}
                                                 <div class="order-flex-grow text-right">{{ 0|commerceCurrency(order.currency, true) }}</div>
                                                 {% endif %}
+                                            </div>
+                                            <div class="adjustment order-flex">
+                                                <div class="order-flex-grow v-center">
+                                                    <span class="adjustment-type">{{ 'Deduction'|t('app') }}</span><span class="info">Deduction from refund (return shipping etc.). Does not impact refund as recorded in TaxJar.</span>
+                                                </div>
+                                                <div class="order-flex-grow">
+                                                    <div class="order-flex flex-field-right">
+                                                        <div id="deduction-field">
+                                                            <div class="input ltr">
+                                                                {% set attributes = {
+                                                                    id: 'deduction-order',
+                                                                    class: [
+                                                                        'text',
+                                                                        'fullwidth'
+                                                                    ],
+                                                                    name: 'deduction',
+                                                                    type: 'number',
+                                                                    min: 0,
+                                                                    max: 0,
+                                                                    step: step,
+                                                                    autocomplete: 'off',
+                                                                } %}
+                                                                <input{{ attr(attributes) }}>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -311,20 +310,20 @@ input[id^=qty-] {
 width: 4.5em;
 }
 
-input[id^=deduction-],
 input#tax-order,
-input#shipping-order {
+input#shipping-order,
+input#deduction-order {
 width: 8.5em;
 text-align: right;
 -moz-appearance: textfield;
 }
 
-input[id^=deduction-]::-webkit-outer-spin-button,
-input[id^=deduction-]::-webkit-inner-spin-button,
 input#tax-order::-webkit-outer-spin-button,
 input#tax-order::-webkit-inner-spin-button,
 input#shipping-order::-webkit-outer-spin-button,
-input#shipping-order::-webkit-inner-spin-button {
+input#shipping-order::-webkit-inner-spin-button,
+input#deduction-order::-webkit-outer-spin-button,
+input#deduction-order::-webkit-inner-spin-button {
 -webkit-appearance: none;
 margin: 0;
 }

@@ -167,44 +167,30 @@ Craft.Commerce.TaxJarRefundModal = Garnish.Modal.extend(
             var formatter = new Intl.NumberFormat(this.language, { style: 'currency', currency: this.currency }),
                 sum = 0;
 
-            if (ev.target.id !== 'shipping-order' && ev.target.id !== 'tax-order') {
-                var item, id, qty;
-
-                if (ev.target.id.indexOf('deduction-') !== -1) {
-                    id = $(ev.target).data('id');
-                    item = $('#qty-' + id);
+            if (['shipping-order', 'tax-order', 'deduction-order'].indexOf(ev.target.id) === -1) {
+                var item = $(ev.target),
+                    id = item.data('id'),
                     qty = item.val();
-
-                    var tar = $(ev.target);
-                    if (qty == 0 || tar.val() > tar.attr('max')) {
-                        tar.val('');
-                        return;
-                    }
-                } else {
-                    item = $(ev.target);
-                    id = item.data('id');
-                    qty = item.val();
-                }
 
                 var refundPrice = item.data('saleprice') * qty,
                     refundDiscount = item.data('unitdiscount') * qty,
-                    refundDeduction = Number($('#deduction-' + id).val()),
-                    refundLessTax = refundPrice + refundDiscount + refundDeduction,
-                    taxRatio = qty == 0 ? 0 : refundLessTax / (refundPrice + refundDiscount),
-                    refundTax = item.data('unittax') * qty * taxRatio,
-                    refundSubtotal = refundPrice + refundDiscount + refundDeduction + refundTax;
+                    refundTax = item.data('unittax') * qty,
+                    refundSubtotal = refundPrice + refundDiscount + refundTax;
 
                 $('#price-' + id).text(formatter.format(refundPrice));
                 $('#discount-' + id).text(formatter.format(refundDiscount));
-                $('#deduction-' + id).attr('min', ((refundPrice + refundDiscount) * -1));
                 $('#tax-' + id).text(formatter.format(refundTax));
                 $('#subtotal-' + id).data('subtotal', refundSubtotal).text(formatter.format(refundSubtotal));
             } else {
-                var tar = $(ev.target);
-                if (ev.target.value > Number(tar.attr('max'))) {
+                var tar = $(ev.target),
+                    val = Number(tar.val()),
+                    max = Number(tar.attr('max')),
+                    min = Number(tar.attr('min'));
+
+                if (val > max || (val == max && tar.val().length > tar.attr('max').length)) {
                     tar.val(tar.attr('max'));
                 }
-                if (ev.target.value < Number(tar.attr('min'))) {
+                if (val < min || (val == min && tar.val().length > tar.attr('min').length)) {
                     tar.val(tar.attr('min'));
                 }
             }
@@ -218,6 +204,13 @@ Craft.Commerce.TaxJarRefundModal = Garnish.Modal.extend(
             if ($('#tax-order').length) {
                 sum += Number($('#tax-order').val());
             }
+            
+            var deduction = $('#deduction-order');
+            deduction.attr('max', sum);
+            if (deduction.val().length && Number(deduction.val()) > sum) {
+                deduction.val(sum);
+            }
+            sum -= Number(deduction.val());
 
             $('#form-taxjar-refund input.btn.submit').val(Craft.t('app', 'Refund') + ' ' + formatter.format(sum));
         }
