@@ -1,5 +1,19 @@
 # Release Notes for Craft Commerce
 
+## 1.0.3 - 2021-10-07
+
+### Changed
+- Changed how deductions are handled in refunds. Deduction amounts no longer affect sales tax returned to the customer or data sent to TaxJar.
+
+### Fixed
+- Fixed a bug that could occur when order was fully paid with gift voucher.
+
+## 1.0.2 - 2021-07-21
+
+### Added
+- Added ability to commit transactions.
+- Added ability to create refunds.
+
 ## 1.0.1 - 2021-02-25
 
 ### Fixed
