@@ -1,5 +1,14 @@
 # Release Notes for Craft Commerce
 
+## 1.0.4 - 2021-12-17
+
+### Added
+- Added `craft\commerce\taxjar\events\SetAddressForTaxEvent`
+- Added `craft\commerce\taxjar\adjusters\TaxJar::SET_ADDRESS_FOR_TAX_EVENT`
+- Added `craft\commerce\taxjar\services\Api::TYPE_FROM`
+- Added `craft\commerce\taxjar\services\Api::TYPE_TO`
+- Added `craft\commerce\taxjar\services\Api::_getAddressParams()`
+
 ## 1.0.3 - 2021-10-07
 
 ### Changed
