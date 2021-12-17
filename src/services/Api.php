@@ -26,6 +26,12 @@ use yii\base\Component;
  */
 class Api extends Component
 {
+    // Constants
+    // =========================================================================
+
+    const TYPE_FROM = 'from';
+    const TYPE_TO = 'to';
+
     // Properties
     // =========================================================================
 
@@ -68,14 +74,7 @@ class Api extends Component
     public function getFromParams(): array
     {
         $storeLocation = Plugin::getInstance()->getAddresses()->getStoreLocationAddress();
-
-        return [
-            'from_country' => $storeLocation->getCountry()->iso ?? '',
-            'from_zip' => $storeLocation->zipCode ?? '',
-            'from_state' => $storeLocation->getState()->abbreviation ?? '',
-            'from_city' => $storeLocation->city ?? '',
-            'from_street' => $storeLocation->address1 ?? ''
-        ];
+        return $this->_getAddressParams(self::TYPE_FROM, $storeLocation);
     }
 
     /**
@@ -84,13 +83,7 @@ class Api extends Component
      */
     public function getToParams(Address $address): array
     {
-        return [
-            'to_country' => $address->getCountry()->iso ?? '',
-            'to_zip' => $address->zipCode ?? '',
-            'to_state' => $address->getState()->abbreviation ?? '',
-            'to_city' => $address->city ?? '',
-            'to_street' => $address->address1 ?? ''
-        ];
+        return $this->_getAddressParams(self::TYPE_TO, $address);
     }
 
     /**
@@ -137,5 +130,21 @@ class Api extends Component
         }
 
         return $lineItemsParams;
+    }
+
+    /**
+     * @param string $type
+     * @param Address $address
+     * @return array
+     */
+    private function _getAddressParams(string $type, Address $address): array
+    {
+        return [
+            $type . '_country' => $address->getCountry()->iso,
+            $type . '_zip' => $address->zipCode,
+            $type . '_state' => $address->getState()->abbreviation,
+            $type . '_city' => $address->city,
+            $type . '_street' => $address->address1
+        ];
     }
 }
