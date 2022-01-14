@@ -114,41 +114,15 @@ class TaxJar extends Component implements AdjusterInterface
             return [];
         }
 
-        $adjustments = [];
-        $orderLevelTaxes = $orderTaxes->amount_to_collect;
-
-        if (isset($orderTaxes->breakdown)) {
-            $lineItems = $this->_order->getLineItems();
-            foreach ($orderTaxes->breakdown->line_items as $i => $lineItem) {
-                $adjustment = new OrderAdjustment();
-                $adjustment->type = self::ADJUSTMENT_TYPE;
-                $adjustment->name = Craft::t('commerce', 'Sales Tax');
-                $adjustment->amount = $lineItem->tax_collectable;
-                $adjustment->description = "Combined tax rate {$this->_getPercent($lineItem->combined_tax_rate)}";
-                $adjustment->orderId = $this->_order->id;
-                $adjustment->sourceSnapshot = [];
-                if (strpos($lineItem->id, "temp-{$this->_order->id}-") !== false) {
-                    $adjustment->setLineItem($lineItems[$i]);
-                } else {
-                    $adjustment->lineItemId = $lineItem->id;
-                }
-
-                $orderLevelTaxes -= $lineItem->tax_collectable;
-                $adjustments[] = $adjustment;
-            }
-        }
-
         $adjustment = new OrderAdjustment();
         $adjustment->type = self::ADJUSTMENT_TYPE;
         $adjustment->name = Craft::t('commerce', 'Sales Tax');
-        $adjustment->amount = $orderLevelTaxes;
+        $adjustment->amount = $orderTaxes->amount_to_collect;
         $adjustment->description = "Combined tax rate {$this->_getPercent($orderTaxes->rate)}";
         $adjustment->setOrder($this->_order);
         $adjustment->sourceSnapshot = json_decode(json_encode($orderTaxes), true);
 
-        $adjustments[] = $adjustment;
-
-        return $adjustments;
+        return [$adjustment];
     }
 
     /**

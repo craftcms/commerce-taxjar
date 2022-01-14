@@ -169,6 +169,8 @@ class OrdersController extends BaseCpController
         $plugin = Plugin::getInstance();
         $order = $plugin->getOrders()->getOrderById($orderId);
 
+        $lineItemTaxes = $this->_getLineItemTaxesByLineItemUid($order);
+
         $refundIds = (new Query())
             ->select(['id'])
             ->from('{{%taxjar_refunds}}')
@@ -196,6 +198,7 @@ class OrdersController extends BaseCpController
 
         $modalHtml = $view->renderTemplate('commerce-taxjar/_refundmodal', [
             'order' => $order,
+            'lineItemTaxes' => $lineItemTaxes,
             'remaining' => $remaining
         ]);
 
@@ -284,7 +287,7 @@ class OrdersController extends BaseCpController
                     // Build line item params while we're here
                     $category = $taxCategories->getTaxCategoryById($lineItem->taxCategoryId);
                     $lineItemsParams[] = [
-                        'id' => $lineItem->id,
+                        'id' => $lineItem->uid,
                         'quantity' => $refundItems[$lineItem->id]['qty'],
                         'unit_price' => $qtySubtotal * -1,
                         'discount' => $qtyDiscount,
@@ -438,5 +441,25 @@ class OrdersController extends BaseCpController
         $orderData = array_merge($from, $to, $amounts, $orderParams);
 
         return $orderData;
+    }
+
+    /**
+     * @param Order $order
+     * @return array
+     */
+    private function _getLineItemTaxesByLineItemUid(Order $order): array
+    {
+        $adjustments = $order->getAdjustmentsByType('tax');
+        $taxes = [];
+
+        foreach ($adjustments as $adjustment) {
+            if (!$adjustment->lineItemId && !empty($adjustment->sourceSnapshot)) {
+                foreach ($adjustment->sourceSnapshot['breakdown']['line_items'] as $lineItem) {
+                    $taxes[$lineItem['id']] = $lineItem['tax_collectable'];
+                }
+            }
+        }
+
+        return $taxes;
     }
 }

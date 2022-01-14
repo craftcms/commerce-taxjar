@@ -113,7 +113,7 @@ class Api extends Component
         foreach ($lineItems as $i => $lineItem) {
             $category = $taxCategories->getTaxCategoryById($lineItem->taxCategoryId);
             $lineItemParams = [
-                'id' => $lineItem->id ?: "temp-{$lineItem->orderId}-{$i}",
+                'id' => $lineItem->uid, // Use UID as it's a consistent identifier even when line item is not yet saved
                 'quantity' => $lineItem->qty,
                 'unit_price' => $lineItem->salePrice,
                 'discount' => $lineItem->getDiscount() < 0 ? $lineItem->getDiscount() * -1 : null,

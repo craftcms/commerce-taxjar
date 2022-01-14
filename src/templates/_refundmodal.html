@@ -38,7 +38,8 @@
 
                     <div class="line-items">
                         {% for lineItem in order.lineItems %}
-                        {% set orderTax = orderTax - lineItem.tax %}
+                        {% set lineItemTax = lineItemTaxes[lineItem.uid] is defined ? lineItemTaxes[lineItem.uid] : lineItem.tax %}
+                        {% set orderTax = orderTax - lineItemTax %}
                         {% set inputClasses = ['text', 'fullwidth'] %}
                         {% set qty = remaining[lineItem.id] ?? lineItem.qty %}
                         {% if qty == 0 %}
@@ -78,7 +79,7 @@
                                                                         id: lineItem.id,
                                                                         saleprice: lineItem.salePrice|commerceCurrency(order.currency, true, false),
                                                                         unitdiscount: (lineItem.discount / lineItem.qty)|commerceCurrency(order.currency, true, false),
-                                                                        unittax: (lineItem.tax / lineItem.qty)|commerceCurrency(order.currency, true, false)
+                                                                        unittax: (lineItemTax / lineItem.qty)|commerceCurrency(order.currency, true, false)
                                                                     }
                                                                 } %}
                                                             {% if qty == 0 %}
@@ -102,7 +103,7 @@
                                                 {% endif %}
 
                                                 <div class="adjustment order-flex">
-                                                    <div class="order-flex-grow"><span class="adjustment-type">{{ 'Tax'|t('app') }}</span>{{ (lineItem.tax / lineItem.qty)|commerceCurrency(order.currency, true) }}</div>
+                                                    <div class="order-flex-grow"><span class="adjustment-type">{{ 'Tax'|t('app') }}</span>{{ (lineItemTax / lineItem.qty)|commerceCurrency(order.currency, true) }}</div>
                                                     <div id="tax-{{ lineItem.id }}" class="order-flex-grow text-right">{{ 0|commerceCurrency(order.currency, true) }}</div>
                                                 </div>
                                             </div>
