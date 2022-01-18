@@ -19,7 +19,6 @@ use craft\commerce\taxjar\adjusters\Tax;
 use craft\commerce\taxjar\models\Settings;
 use craft\commerce\taxjar\queue\jobs\CreateOrder;
 use craft\commerce\taxjar\services\Api;
-use craft\commerce\taxjar\services\Categories;
 use craft\commerce\taxjar\engines\TaxJar as TaxJarEngine;
 use craft\commerce\taxjar\web\assets\actions\Actions;
 use yii\base\Event;
@@ -101,9 +100,9 @@ class TaxJar extends BasePlugin
     }
 
     /**
-     * Returns the categories service
+     * Returns the API service
      *
-     * @return Api The cart service
+     * @return Api The API service
      * @throws \yii\base\InvalidConfigException
      */
     public function getApi()

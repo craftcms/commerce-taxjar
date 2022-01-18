@@ -15,14 +15,13 @@ use craft\commerce\taxjar\TaxJar;
 use yii\base\Component;
 
 /**
- * TaxJar tax category service.
+ * TaxJar API service.
  *
  * @author Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @since 1.0
  *
  *
  * @property \TaxJar\Client $client
- * @property mixed $categories
  */
 class Api extends Component
 {
