@@ -1,5 +1,14 @@
 # Release Notes for Craft Commerce
 
+## 1.0.5 - 2022-01-18
+
+### Changed
+- Reverted taxes to only being applied at order level to prevent rounding issues.
+- Line item taxes for refunds are now retrieved from tax snapshot.
+
+### Fixed
+- Fixed a bug that could prevent total order amount from being refunded.
+
 ## 1.0.4 - 2021-12-17
 
 ### Added
