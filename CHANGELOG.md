@@ -1,5 +1,10 @@
 # Release Notes for Craft Commerce
 
+## 1.0.5.1 - 2022-01-20
+
+### Fixed
+- Fixed a bug where opening the TaxJar refund modal would produce a server error.
+
 ## 1.0.5 - 2022-01-18
 
 ### Changed

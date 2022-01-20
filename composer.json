@@ -2,7 +2,7 @@
     "name": "jmauzyk/commerce-taxjar",
     "description": "TaxJar Integration for Craft Commerce",
     "type": "craft-plugin",
-    "version": "1.0.5",
+    "version": "1.0.5.1",
     "keywords": [
         "craft",
         "cms",
