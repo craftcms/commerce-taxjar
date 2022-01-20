@@ -280,11 +280,11 @@ class OrdersController extends BaseCpController
 
                     // Calculate proportioned line item price and discount
                     $qtySubtotal = $lineItem->salePrice * $refundItems[$lineItem->id]['qty'];
-                    $qtyDiscount = $lineItem->discount * $qtyRatio;
+                    $qtyDiscount = $lineItem->discount < 0 ? $lineItem->discount * $qtyRatio : $lineItem->discount;
 
                     // Calculate proportioned line item taxes
                     $lineItemTax = isset($lineItemTaxes[$lineItem->uid]) ? $lineItemTaxes[$lineItem->uid] : $lineItem->tax;
-                    $qtyTax = $lineItemTax * $qtyRatio;
+                    $qtyTax = $lineItemTax > 0 ? $lineItemTax * $qtyRatio : $lineItemTax;
 
                     // Store proportioned amounts in refund totals
                     $totalItems += ($qtySubtotal + $qtyDiscount);
@@ -460,8 +460,14 @@ class OrdersController extends BaseCpController
 
         foreach ($adjustments as $adjustment) {
             if (!$adjustment->lineItemId && !empty($adjustment->sourceSnapshot)) {
-                foreach ($adjustment->sourceSnapshot['breakdown']['line_items'] as $lineItem) {
-                    $taxes[$lineItem['id']] = $lineItem['tax_collectable'];
+                if ($adjustment->amount == 0 && !isset($adjustment->sourceSnapshot['breakdown'])) {
+                    foreach ($order->lineItems as $lineItem) {
+                        $taxes[$lineItem->uid] = 0.0000;
+                    }
+                } else {
+                    foreach ($adjustment->sourceSnapshot['breakdown']['line_items'] as $lineItem) {
+                        $taxes[$lineItem['id']] = $lineItem['tax_collectable'];
+                    }
                 }
             }
         }
