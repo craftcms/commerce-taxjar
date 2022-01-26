@@ -1,5 +1,10 @@
 # Release Notes for Craft Commerce
 
+## 1.0.5.2 - 2022-01-26
+
+### Fixed
+- Fixed a bug preventing line item descriptions from displaying in TaxJar
+
 ## 1.0.5.1 - 2022-01-20
 
 ### Fixed
