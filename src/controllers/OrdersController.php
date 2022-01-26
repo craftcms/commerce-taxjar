@@ -300,7 +300,7 @@ class OrdersController extends BaseCpController
                         'sales_tax' => Currency::round($qtyTax * -1),
                         'product_tax_code' => $category && $category->handle !== 'general' ? $category->handle : null,
                         'product_identifier' => $lineItem->sku,
-                        'descripton' => $lineItem->description
+                        'description' => $lineItem->description
                     ];
                 }
             }
