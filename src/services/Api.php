@@ -95,21 +95,24 @@ class Api extends Component
         return [
             'amount' => $order->getItemSubtotal() + $order->getTotalDiscount() + $order->getTotalShippingCost(),
             'shipping' => $order->getTotalShippingCost(),
-            'line_items' => $this->getLineItemsParams($order->getLineItems(), $includeAll)
+            'line_items' => $this->getLineItemsParams($order, $includeAll)
         ];
     }
 
     /**
-     * @param array $lineItems
+     * @param Order $order
      * @param bool $includeAll
      * @return array
      */
-    public function getLineItemsParams(array $lineItems, bool $includeAll = true): array
+    public function getLineItemsParams(Order $order, bool $includeAll = true): array
     {
         $lineItemsParams = [];
         $taxCategories = Plugin::getInstance()->getTaxCategories();
+        if ($includeAll) {
+            $lineItemTaxes = $this->getLineItemTaxesByLineItemUid($order);
+        }
 
-        foreach ($lineItems as $i => $lineItem) {
+        foreach ($order->getLineItems() as $lineItem) {
             $category = $taxCategories->getTaxCategoryById($lineItem->taxCategoryId);
             $lineItemParams = [
                 'id' => $lineItem->uid, // Use UID as it's a consistent identifier even when line item is not yet saved
@@ -122,13 +125,39 @@ class Api extends Component
             if ($includeAll) {
                 $lineItemParams['product_identifier'] = $lineItem->sku;
                 $lineItemParams['description'] = $lineItem->description;
-                $lineItemParams['sales_tax'] = $lineItem->tax;
+                $lineItemParams['sales_tax'] = isset($lineItemTaxes[$lineItem->uid]) ? $lineItemTaxes[$lineItem->uid] : $lineItem->tax;
             }
 
             $lineItemsParams[] = $lineItemParams;
         }
 
         return $lineItemsParams;
+    }
+
+    /**
+     * @param Order $order
+     * @return array
+     */
+    public function getLineItemTaxesByLineItemUid(Order $order): array
+    {
+        $adjustments = $order->getAdjustmentsByType('tax');
+        $taxes = [];
+
+        foreach ($adjustments as $adjustment) {
+            if (!$adjustment->lineItemId && !empty($adjustment->sourceSnapshot)) {
+                if ($adjustment->amount == 0 && !isset($adjustment->sourceSnapshot['breakdown'])) {
+                    foreach ($order->lineItems as $lineItem) {
+                        $taxes[$lineItem->uid] = 0.0000;
+                    }
+                } else {
+                    foreach ($adjustment->sourceSnapshot['breakdown']['line_items'] as $lineItem) {
+                        $taxes[$lineItem['id']] = $lineItem['tax_collectable'];
+                    }
+                }
+            }
+        }
+
+        return $taxes;
     }
 
     /**

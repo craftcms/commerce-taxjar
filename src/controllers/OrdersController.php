@@ -169,7 +169,7 @@ class OrdersController extends BaseCpController
         $plugin = Plugin::getInstance();
         $order = $plugin->getOrders()->getOrderById($orderId);
 
-        $lineItemTaxes = $this->_getLineItemTaxesByLineItemUid($order);
+        $lineItemTaxes = TaxJar::getInstance()->getApi()->getLineItemTaxesByLineItemUid($order);
 
         $refundIds = (new Query())
             ->select(['id'])
@@ -216,6 +216,7 @@ class OrdersController extends BaseCpController
         $this->requirePostRequest();
 
         $plugin = Plugin::getInstance();
+        $api = TaxJar::getInstance()->getApi();
         $orderId = $this->request->getBodyParam('orderId');
         $refundItems = array_filter($this->request->getBodyParam('refunds'), function($var) {
             return !empty($var['qty']);
@@ -243,7 +244,7 @@ class OrdersController extends BaseCpController
 
         if (!empty($refundItems)) {
             $taxCategories = Plugin::getInstance()->getTaxCategories();
-            $lineItemTaxes = $this->_getLineItemTaxesByLineItemUid($order);
+            $lineItemTaxes = $api->getLineItemTaxesByLineItemUid($order);
             $refundItemIds = array_keys($refundItems);
             $refundIds = (new Query())
                 ->select(['id'])
@@ -373,7 +374,6 @@ class OrdersController extends BaseCpController
             }
         }
 
-        $api = TaxJar::getInstance()->getApi();
         $from = $api->getFromParams();
         $to = $api->getToParams($order->getShippingAddress());
         $transaction_id = count($success) ? implode('_', $success) : $order->id . '_refund_' . time();
@@ -447,31 +447,5 @@ class OrdersController extends BaseCpController
         $orderData = array_merge($from, $to, $amounts, $orderParams);
 
         return $orderData;
-    }
-
-    /**
-     * @param Order $order
-     * @return array
-     */
-    private function _getLineItemTaxesByLineItemUid(Order $order): array
-    {
-        $adjustments = $order->getAdjustmentsByType('tax');
-        $taxes = [];
-
-        foreach ($adjustments as $adjustment) {
-            if (!$adjustment->lineItemId && !empty($adjustment->sourceSnapshot)) {
-                if ($adjustment->amount == 0 && !isset($adjustment->sourceSnapshot['breakdown'])) {
-                    foreach ($order->lineItems as $lineItem) {
-                        $taxes[$lineItem->uid] = 0.0000;
-                    }
-                } else {
-                    foreach ($adjustment->sourceSnapshot['breakdown']['line_items'] as $lineItem) {
-                        $taxes[$lineItem['id']] = $lineItem['tax_collectable'];
-                    }
-                }
-            }
-        }
-
-        return $taxes;
     }
 }
