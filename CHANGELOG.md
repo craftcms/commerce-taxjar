@@ -1,5 +1,10 @@
 # Release Notes for Craft Commerce
 
+## 1.0.5.3 - 2022-02-15
+
+### Fixed
+- Fixed a bug causing incorrect tax breakdown in TaxJar
+
 ## 1.0.5.2 - 2022-01-26
 
 ### Fixed
