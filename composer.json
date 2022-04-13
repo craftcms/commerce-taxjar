@@ -2,7 +2,6 @@
   "name": "craftcms/commerce-taxjar",
   "description": "TaxJar Integration for Craft Commerce",
   "type": "craft-plugin",
-  "version": "1.0.1",
   "keywords": [
     "craft",
     "cms",
