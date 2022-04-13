@@ -22,9 +22,10 @@
     }
   ],
   "require": {
-    "craftcms/cms": "^3.4.0",
-    "craftcms/commerce": "^3.1.0",
-    "taxjar/taxjar-php": "^1.10.0"
+    "craftcms/cms": "^4.0.0-beta.4",
+    "craftcms/commerce": "^4.0.0-beta.2",
+    "taxjar/taxjar-php": "^1.10.0",
+    "php": "^8.0.2"
   },
   "autoload": {
     "psr-4": {
@@ -46,11 +47,14 @@
   },
   "require-dev": {
     "craftcms/phpstan": "dev-main",
-    "craftcms/ecs": "dev-main"
+    "craftcms/ecs": "dev-main",
+    "craftcms/rector": "dev-main"
   },
   "scripts": {
     "phpstan": "phpstan --memory-limit=1G",
     "check-cs": "ecs check --ansi",
     "fix-cs": "ecs check --ansi --fix"
-  }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

@@ -30,7 +30,7 @@ class TaxJar extends BasePlugin
     /**
      * @var string
      */
-    public $schemaVersion = '1.0.0';
+    public string $schemaVersion = '1.0.0';
 
     /**
      * Initializes the plugin
@@ -74,7 +74,7 @@ class TaxJar extends BasePlugin
     /**
      * @inheritdoc
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?\craft\base\Model
     {
         return new Settings();
     }
