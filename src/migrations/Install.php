@@ -9,7 +9,6 @@ namespace craft\commerce\taxjar\migrations;
 
 use Craft;
 use craft\db\Migration;
-use craft\helpers\MigrationHelper;
 
 /**
  * Installation Migration
@@ -48,7 +47,6 @@ class Install extends Migration
      */
     public function createTables()
     {
-
     }
 
     /**
@@ -79,7 +77,6 @@ class Install extends Migration
      */
     public function addForeignKeys()
     {
-
     }
 
     /**
@@ -87,7 +84,6 @@ class Install extends Migration
      */
     public function dropForeignKeys()
     {
-
     }
 
     /**
@@ -101,7 +97,6 @@ class Install extends Migration
      * Returns if the table exists.
      *
      * @param string $tableName
-     * @param Migration|null $migration
      * @return bool If the table exists.
      * @throws \yii\base\NotSupportedException
      */

@@ -85,7 +85,7 @@ class TaxJar extends Component implements TaxEngineInterface
     {
         Craft::$app->getView()->registerTranslations('commerce', [
             'Categories Updated. Reloading page.',
-            'Categories update failed. Make sure you are not in sandbox mode.'
+            'Categories update failed. Make sure you are not in sandbox mode.',
         ]);
 
         Craft::$app->getView()->registerAssetBundle(TaxJarAsset::class);

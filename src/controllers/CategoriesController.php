@@ -9,7 +9,6 @@ namespace craft\commerce\taxjar\controllers;
 
 use Craft;
 use craft\commerce\controllers\BaseCpController;
-use craft\commerce\models\Customer;
 use craft\commerce\models\TaxCategory;
 use craft\commerce\Plugin;
 use craft\commerce\taxjar\TaxJar;
@@ -25,8 +24,6 @@ use yii\web\Response;
 class CategoriesController extends BaseCpController
 {
     /**
-     * @param int|null $id
-     * @param Customer|null $customer
      * @return Response
      * @throws HttpException
      */
@@ -61,9 +58,8 @@ class CategoriesController extends BaseCpController
                 if (!Plugin::getInstance()->getTaxCategories()->saveTaxCategory($category)) {
                     Craft::error('Could not save tax category from taxjar.');
                     return $this->asJson(['success' => false]);
+                }
             }
-            }
-
         }
 
         return $this->asJson(['success' => true]);

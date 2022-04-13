@@ -9,12 +9,12 @@ namespace craft\commerce\taxjar\adjusters;
 
 use Craft;
 use craft\base\Component;
-use craft\commerce\adjusters\Shipping;
 use craft\commerce\base\AdjusterInterface;
 use craft\commerce\elements\Order;
 use craft\commerce\models\Address;
 use craft\commerce\models\OrderAdjustment;
 use craft\commerce\Plugin;
+use craft\commerce\taxjar\models\Settings;
 use craft\commerce\taxjar\TaxJar as TaxJarPlugin;
 use DvK\Vat\Validator;
 use TaxJar\Exception;
@@ -51,6 +51,8 @@ class TaxJar extends Component implements AdjusterInterface
      */
     public function adjust(Order $order): array
     {
+        /** @var Settings $taxJarSettings */
+        $taxJarSettings = TaxJarPlugin::getInstance()->getSettings();
         $this->_order = $order;
 
         $this->_address = $this->_order->getShippingAddress();
@@ -79,7 +81,7 @@ class TaxJar extends Component implements AdjusterInterface
             $message = 'TaxJar API error code: ' . $e->getStatusCode() . ' Message: ' . $e->getMessage();
             Craft::error($message, 'commerce-taxjar');
 
-            if (TaxJarPlugin::getInstance()->getSettings()->useSandbox) {
+            if ($taxJarSettings->useSandbox) {
                 $adjustment = new OrderAdjustment();
                 $adjustment->type = self::ADJUSTMENT_TYPE;
                 $adjustment->name = Craft::t('commerce', 'TaxJar Error');
@@ -105,7 +107,7 @@ class TaxJar extends Component implements AdjusterInterface
     }
 
     /**
-     * @param Order $order
+     * @return string
      */
     private function _getOrderHash()
     {
@@ -151,7 +153,7 @@ class TaxJar extends Component implements AdjusterInterface
                 'quantity' => $lineItem->qty,
                 'unit_price' => $lineItem->salePrice,
                 'discount' => $lineItem->getDiscount() * -1,
-                'product_tax_code' => $category ? $category->handle : null
+                'product_tax_code' => $category ? $category->handle : null,
             ];
         }
 
@@ -160,7 +162,6 @@ class TaxJar extends Component implements AdjusterInterface
         $orderData = Craft::$app->getCache()->get($cacheKey);
 
         if (!$orderData) {
-
             $orderData = $client->taxForOrder([
                 'from_country' => $storeLocation->getCountry()->iso ?? '',
                 'from_zip' => $storeLocation->zipCode ?? '',
@@ -170,7 +171,7 @@ class TaxJar extends Component implements AdjusterInterface
                 'to_state' => $this->_address->getState()->abbreviation ?? '',
                 //'amount' => We pass line items so not needed
                 'shipping' => $this->_order->getTotalShippingCost(),
-                'line_items' => $lineItems
+                'line_items' => $lineItems,
             ]);
 
             // Save data into cache
