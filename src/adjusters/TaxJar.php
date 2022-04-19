@@ -165,7 +165,7 @@ class TaxJar extends Component implements AdjusterInterface
                 'from_country' => $storeLocation->getCountryCode(),
                 'from_zip' => $storeLocation->getPostalCode() ?? '',
                 'from_state' => $storeLocation->getAdministrativeArea() ?? '',
-                'to_country' => $this->_address->getCountryCode() ?? '',
+                'to_country' => $this->_address->getCountryCode(),
                 'to_zip' => $this->_address->getPostalCode() ?? '',
                 'to_state' => $this->_address->getAdministrativeArea() ?? '',
                 'shipping' => $this->_order->getTotalShippingCost(),

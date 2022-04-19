@@ -92,22 +92,4 @@ class Install extends Migration
     public function insertDefaultData()
     {
     }
-
-    /**
-     * Returns if the table exists.
-     *
-     * @param string $tableName
-     * @return bool If the table exists.
-     * @throws \yii\base\NotSupportedException
-     */
-    private function _tableExists(string $tableName): bool
-    {
-        $schema = $this->db->getSchema();
-        $schema->refresh();
-
-        $rawTableName = $schema->getRawTableName($tableName);
-        $table = $schema->getTableSchema($rawTableName);
-
-        return (bool)$table;
-    }
 }
