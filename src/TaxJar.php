@@ -8,20 +8,13 @@
 
 namespace craft\commerce\taxjar;
 
-use Craft;
 use craft\base\Plugin as BasePlugin;
-use craft\commerce\elements\Order;
 use craft\commerce\events\TaxEngineEvent;
-use craft\commerce\models\Address;
-use craft\commerce\Plugin;
 use craft\commerce\services\Taxes;
-use craft\commerce\taxjar\adjusters\Tax;
+use craft\commerce\taxjar\engines\TaxJar as TaxJarEngine;
 use craft\commerce\taxjar\models\Settings;
 use craft\commerce\taxjar\services\Api;
-use craft\commerce\taxjar\services\Categories;
-use craft\commerce\taxjar\engines\TaxJar as TaxJarEngine;
 use yii\base\Event;
-
 
 /**
  * Class TaxJar
@@ -30,53 +23,45 @@ use yii\base\Event;
  * @package   TaxJar
  * @since     1.0
  *
- * @property \craft\commerce\taxjar\services\Api $api
+ * @property Api $api
  */
 class TaxJar extends BasePlugin
 {
-
-    // Public Properties
-    // =========================================================================
-
     /**
      * @var string
      */
-    public $schemaVersion = '1.0.0';
-
-    // Public Methods
-    // =========================================================================
+    public string $schemaVersion = "1.0.0";
 
     /**
-     *
+     * Initializes the plugin
      */
     public function init()
     {
         $this->_setPluginComponents();
-        $this->_registerRoutes();
         $this->_registerHandlers();
 
         parent::init();
     }
 
-    public function _registerHandlers()
-    {
-        // We want to be the tax engine for commerce
-        Event::on(Taxes::class, Taxes::EVENT_REGISTER_TAX_ENGINE, static function(TaxEngineEvent $e) {
-            $e->engine = new TaxJarEngine;
-        });
-        
-    }
-
     /**
-     * Registered the routes
+     * Registers the event handlers
+     *
+     * @return void
      */
-    private function _registerRoutes()
+    public function _registerHandlers(): void
     {
-
+        // We want to be the tax engine for Commerce
+        Event::on(
+            Taxes::class,
+            Taxes::EVENT_REGISTER_TAX_ENGINE,
+            static function(TaxEngineEvent $e) {
+                $e->engine = new TaxJarEngine();
+            }
+        );
     }
 
     /**
-     * Returns the categories service
+     * Returns the Api service
      *
      * @return Api The cart service
      * @throws \yii\base\InvalidConfigException
@@ -89,18 +74,15 @@ class TaxJar extends BasePlugin
     /**
      * @inheritdoc
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?\craft\base\Model
     {
         return new Settings();
     }
 
-    // Private Methods
-    // =========================================================================
-
     /**
      * Sets the components of the commerce plugin
      */
-    private function _setPluginComponents()
+    private function _setPluginComponents(): void
     {
         $this->setComponents([
             'api' => Api::class,

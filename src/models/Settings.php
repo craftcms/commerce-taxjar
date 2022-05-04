@@ -9,7 +9,6 @@ namespace craft\commerce\taxjar\models;
 
 use craft\commerce\base\Model;
 
-
 /**
  * Settings model.
  *

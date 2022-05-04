@@ -9,7 +9,6 @@ namespace craft\commerce\taxjar\migrations;
 
 use Craft;
 use craft\db\Migration;
-use craft\helpers\MigrationHelper;
 
 /**
  * Installation Migration
@@ -19,9 +18,6 @@ use craft\helpers\MigrationHelper;
  */
 class Install extends Migration
 {
-    // Public Methods
-    // =========================================================================
-
     /**
      * @inheritdoc
      */
@@ -46,15 +42,11 @@ class Install extends Migration
         return true;
     }
 
-    // Protected Methods
-    // =========================================================================
-
     /**
      * Creates the tables for TaxJar
      */
     public function createTables()
     {
-
     }
 
     /**
@@ -85,7 +77,6 @@ class Install extends Migration
      */
     public function addForeignKeys()
     {
-
     }
 
     /**
@@ -93,7 +84,6 @@ class Install extends Migration
      */
     public function dropForeignKeys()
     {
-
     }
 
     /**
@@ -101,27 +91,5 @@ class Install extends Migration
      */
     public function insertDefaultData()
     {
-    }
-
-    // Private Methods
-    // =========================================================================
-
-    /**
-     * Returns if the table exists.
-     *
-     * @param string $tableName
-     * @param Migration|null $migration
-     * @return bool If the table exists.
-     * @throws \yii\base\NotSupportedException
-     */
-    private function _tableExists(string $tableName): bool
-    {
-        $schema = $this->db->getSchema();
-        $schema->refresh();
-
-        $rawTableName = $schema->getRawTableName($tableName);
-        $table = $schema->getTableSchema($rawTableName);
-
-        return (bool)$table;
     }
 }

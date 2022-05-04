@@ -1,5 +1,10 @@
 # Release Notes for Craft Commerce
 
+## 2.0.0 - 2022-05-04
+
+### Added
+- Added Commerce 4 compatibility.
+
 ## 1.0.1 - 2021-02-25
 
 ### Fixed
