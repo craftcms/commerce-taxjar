@@ -35,7 +35,7 @@ class TaxJar extends Component implements AdjusterInterface
     // =========================================================================
 
     const ADJUSTMENT_TYPE = 'tax';
-    const SET_ADDRESS_FOR_TAX_EVENT = 'setAddressForTaxEvent';
+    const EVENT_SET_ADDRESS_FOR_TAX = 'setAddressForTax';
 
     // Properties
     // =========================================================================
@@ -86,7 +86,7 @@ class TaxJar extends Component implements AdjusterInterface
             'address' => $this->_address
         ]);
 
-        Event::trigger(static::class, self::SET_ADDRESS_FOR_TAX_EVENT, $event);
+        Event::trigger(static::class, self::EVENT_SET_ADDRESS_FOR_TAX, $event);
 
         $this->_address = $event->address;
 

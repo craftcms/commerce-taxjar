@@ -15,10 +15,12 @@ use craft\commerce\errors\RefundException;
 use craft\commerce\helpers\Currency;
 use craft\commerce\records\Transaction as TransactionRecord;
 use craft\commerce\taxjar\TaxJar;
+use craft\commerce\taxjar\events\RefundEvent;
 use craft\commerce\taxjar\records\Refund;
 use craft\commerce\taxjar\records\LineItem;
 use craft\db\Query;
 use craft\helpers\DateTimeHelper;
+use yii\base\Event;
 use yii\web\Response;
 
 /**
@@ -29,6 +31,8 @@ use yii\web\Response;
  */
 class OrdersController extends BaseCpController
 {
+    const EVENT_AFTER_SEND_REFUND = 'afterSendRefund';
+
     /**
      * @throws HttpException
      * @throws InvalidConfigException
@@ -425,6 +429,12 @@ class OrdersController extends BaseCpController
             ['lineItemId', 'refundId', 'quantity'],
             $rows
         )->execute();
+
+        $event = new RefundEvent([
+            'sender' => $refund,
+        ]);
+
+        Event::trigger(static::class, self::EVENT_AFTER_SEND_REFUND, $event);
 
         return $this->redirectToPostedUrl();
     }
