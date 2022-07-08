@@ -1,5 +1,14 @@
 # Release Notes for Craft Commerce
 
+## 1.1.0 - 2022-07-08
+
+### Added
+- Added `craft\commerce\taxjar\events\RefundEvent`
+- Added `craft\commerce\taxjar\controllers\OrdersController::EVENT_AFTER_SEND_REFUND`
+
+### Changed
+- Renamed `craft\commerce\taxjar\adjusters\TaxJar::SET_ADDRESS_FOR_TAX_EVENT` to `craft\commerce\taxjar\adjusters\TaxJar::EVENT_SET_ADDRESS_FOR_TAX`
+
 ## 1.0.5.3 - 2022-02-15
 
 ### Fixed
