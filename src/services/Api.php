@@ -29,6 +29,8 @@ class Api extends Component
      */
     private $_client;
 
+    public const HANDLE_PREFIX = "tj_";
+
     /**
      *
      */

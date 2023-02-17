@@ -30,7 +30,7 @@ class TaxJar extends BasePlugin
     /**
      * @var string
      */
-    public string $schemaVersion = "1.0.0";
+    public string $schemaVersion = "1.2.0";
 
     /**
      * Initializes the plugin
