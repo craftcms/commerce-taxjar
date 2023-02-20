@@ -30,7 +30,7 @@ use TaxJar\Exception;
  */
 class TaxJar extends Component implements AdjusterInterface
 {
-    const ADJUSTMENT_TYPE = 'tax';
+    public const ADJUSTMENT_TYPE = 'tax';
 
     /**
      * @var ?Order

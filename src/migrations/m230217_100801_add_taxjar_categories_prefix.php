@@ -2,7 +2,6 @@
 
 namespace craft\commerce\taxjar\migrations;
 
-use Craft;
 use craft\commerce\taxjar\services\Api;
 use craft\db\Migration;
 use craft\db\Query;
