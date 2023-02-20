@@ -14,6 +14,7 @@ use craft\commerce\elements\Order;
 use craft\commerce\models\OrderAdjustment;
 use craft\commerce\Plugin;
 use craft\commerce\taxjar\models\Settings;
+use craft\commerce\taxjar\services\Api;
 use craft\commerce\taxjar\TaxJar as TaxJarPlugin;
 use craft\elements\Address;
 use DvK\Vat\Validator;
@@ -152,7 +153,7 @@ class TaxJar extends Component implements AdjusterInterface
                 'quantity' => $lineItem->qty,
                 'unit_price' => $lineItem->salePrice,
                 'discount' => $lineItem->getDiscount() * -1,
-                'product_tax_code' => $category?->handle,
+                'product_tax_code' => str_replace(Api::HANDLE_PREFIX, '', $category?->handle),
             ];
         }
 
