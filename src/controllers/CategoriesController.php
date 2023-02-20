@@ -11,6 +11,7 @@ use Craft;
 use craft\commerce\controllers\BaseCpController;
 use craft\commerce\models\TaxCategory;
 use craft\commerce\Plugin;
+use craft\commerce\taxjar\services\Api;
 use craft\commerce\taxjar\TaxJar;
 use yii\web\HttpException;
 use yii\web\Response;
@@ -47,7 +48,7 @@ class CategoriesController extends BaseCpController
                 $category = new TaxCategory();
 
                 $category->default = false;
-                $category->handle = $handle;
+                $category->handle = Api::HANDLE_PREFIX . $handle;
                 $category->name = $taxJarCategory->name;
                 $category->description = $taxJarCategory->description;
 
