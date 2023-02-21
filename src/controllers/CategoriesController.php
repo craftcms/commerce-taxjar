@@ -41,14 +41,14 @@ class CategoriesController extends BaseCpController
 
 
         foreach ($allCategories as $taxJarCategory) {
-            $handle = $taxJarCategory->product_tax_code;
+            $handle = Api::HANDLE_PREFIX . $taxJarCategory->product_tax_code;
             $category = Plugin::getInstance()->getTaxCategories()->getTaxCategoryByHandle($handle);
 
             if (!$category) {
                 $category = new TaxCategory();
 
                 $category->default = false;
-                $category->handle = Api::HANDLE_PREFIX . $handle;
+                $category->handle = $handle;
                 $category->name = $taxJarCategory->name;
                 $category->description = $taxJarCategory->description;
 
