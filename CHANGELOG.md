@@ -1,5 +1,10 @@
 # Release Notes for Craft Commerce
 
+## 2.1.0 - Unreleased
+
+### Added
+- Provided a more precise store location address to the Tax Jar API. ([#13](https://github.com/craftcms/commerce-taxjar/pull/13))
+
 ## 2.0.0 - 2022-05-04
 
 ### Added
