@@ -1,6 +1,6 @@
 # Release Notes for Craft Commerce
 
-## 2.1.0 - Unreleased
+## 2.1.0 - 2024-03-20
 
 ### Added
 - Added Craft CMS 5 and Craft Commerce 5 compatibility.
