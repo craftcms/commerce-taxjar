@@ -57,7 +57,7 @@ class TaxJar extends Component implements AdjusterInterface
 
         $this->_address = $this->_order->getShippingAddress();
 
-        if (Plugin::getInstance()->getSettings()->useBillingAddressForTax) {
+        if ($this->_order->getStore()->getUseBillingAddressForTax()) {
             $this->_address = $this->_order->getBillingAddress();
         }
 
@@ -65,7 +65,7 @@ class TaxJar extends Component implements AdjusterInterface
             $this->_address = $order->getEstimatedShippingAddress();
         }
 
-        if (Plugin::getInstance()->getSettings()->useBillingAddressForTax) {
+        if ($this->_order->getStore()->getUseBillingAddressForTax()) {
             if (!$this->_address) {
                 $this->_address = $this->_order->getEstimatedBillingAddress();
             }
@@ -135,7 +135,7 @@ class TaxJar extends Component implements AdjusterInterface
     private function _getOrderTaxData()
     {
         $orderHash = $this->_getOrderHash();
-        $storeLocation = Plugin::getInstance()->getStore()->getStore()->getLocationAddress();
+        $storeLocation = $this->_order->getStore()->getSettings()->getLocationAddress();
         $client = TaxJarPlugin::getInstance()->getApi()->getClient();
 
         // Do we already have it on this request?
