@@ -32,7 +32,7 @@ class TaxJar extends Component implements AdjusterInterface
 {
     public const ADJUSTMENT_TYPE = 'tax';
 
-    const EVENT_MODIFY_TAX_FOR_ORDER_REQUEST = 'modifyTaxForOrderRequest';
+    public const EVENT_MODIFY_TAX_FOR_ORDER_REQUEST = 'modifyTaxForOrderRequest';
 
     /**
      * @var ?Order
@@ -120,7 +120,7 @@ class TaxJar extends Component implements AdjusterInterface
         $count = 0;
         foreach ($this->_order->getLineItems() as $item) {
             $count++;
-            $lineItems .= $count . ':' . $item->getOptionsSignature() . ':' . $item->qty . ':' . $item->getSubtotal() . ':' .  $item->taxCategoryId;
+            $lineItems .= $count . ':' . $item->getOptionsSignature() . ':' . $item->qty . ':' . $item->getSubtotal() . ':' . $item->taxCategoryId;
         }
         $price = $this->_order->getTotalPrice();
 
@@ -130,7 +130,7 @@ class TaxJar extends Component implements AdjusterInterface
             $address[] = $this->_address->getAddressLine2() ?? '';
             $address[] = $this->_address->getPostalCode() ?? '';
             $address[] = $this->_address->getAdministrativeArea() ?? '';
-            $address[] = $this->_address->getCountryCode() ?? '';
+            $address[] = $this->_address->getCountryCode();
             $address[] = $this->_address->getLocality() ?? '';
             $address[] = $this->_address->getAddressLine1() ?? '';
         }
