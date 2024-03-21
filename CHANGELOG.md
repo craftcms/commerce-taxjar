@@ -3,7 +3,10 @@
 ## 2.1.0 - Unreleased
 
 ### Added
+- Added Craft CMS 5 and Craft Commerce 5 compatibility.
+- Added `craft\commerce\taxjar\events\ModifyRequestEvent`.
 - Provided a more precise store location address to the Tax Jar API. ([#13](https://github.com/craftcms/commerce-taxjar/pull/13))
+- Fixed a bug where cached tax rates were not being invalidated when line item tax category changed. ([#11](https://github.com/craftcms/commerce-taxjar/issues/11))
 
 ## 2.0.0 - 2022-05-04
 

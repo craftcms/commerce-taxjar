@@ -13,6 +13,7 @@ use craft\commerce\base\AdjusterInterface;
 use craft\commerce\elements\Order;
 use craft\commerce\models\OrderAdjustment;
 use craft\commerce\Plugin;
+use craft\commerce\taxjar\events\ModifyRequestEvent;
 use craft\commerce\taxjar\models\Settings;
 use craft\commerce\taxjar\TaxJar as TaxJarPlugin;
 use craft\elements\Address;
@@ -30,6 +31,8 @@ use TaxJar\Exception;
 class TaxJar extends Component implements AdjusterInterface
 {
     public const ADJUSTMENT_TYPE = 'tax';
+
+    const EVENT_MODIFY_TAX_FOR_ORDER_REQUEST = 'modifyTaxForOrderRequest';
 
     /**
      * @var ?Order
@@ -121,15 +124,18 @@ class TaxJar extends Component implements AdjusterInterface
         }
         $price = $this->_order->getTotalPrice();
 
+        $address = [];
         if ($this->_address) {
-            $address .= $this->_address->getAddressLine1();
-            $address .= $this->_address->getAddressLine2();
-            $address .= $this->_address->getPostalCode();
-            $address .= $this->_address->getAdministrativeArea();
-            $address .= $this->_address->getCountryCode();
+            $address[] = $this->_address->getAddressLine1() ?? '';
+            $address[] = $this->_address->getAddressLine2() ?? '';
+            $address[] = $this->_address->getPostalCode() ?? '';
+            $address[] = $this->_address->getAdministrativeArea() ?? '';
+            $address[] = $this->_address->getCountryCode() ?? '';
+            $address[] = $this->_address->getLocality() ?? '';
+            $address[] = $this->_address->getAddressLine1() ?? '';
         }
 
-        return md5($number . ':' . $lineItems . ':' . $address . ':' . $price);
+        return md5($number . ':' . $lineItems . ':' . implode(':', $address) . ':' . $price);
     }
 
     private function _getOrderTaxData()
@@ -161,7 +167,7 @@ class TaxJar extends Component implements AdjusterInterface
         $orderData = Craft::$app->getCache()->get($cacheKey);
 
         if (!$orderData && $storeLocation) {
-            $orderData = $client->taxForOrder([
+            $params = [
                 'from_country' => $storeLocation->getCountryCode(),
                 'from_zip' => $storeLocation->getPostalCode() ?? '',
                 'from_state' => $storeLocation->getAdministrativeArea() ?? '',
@@ -172,8 +178,20 @@ class TaxJar extends Component implements AdjusterInterface
                 'to_street' => $this->_address->getAddressLine1() ?? '',
                 'shipping' => $this->_order->getTotalShippingCost(),
                 'line_items' => $lineItems,
+            ];
+
+            // raise event to let developer modify $params
+            $event = new ModifyRequestEvent([
+                'requestParams' => $params,
+                'order' => $this->_order,
+                'address' => $this->_address,
             ]);
 
+            // trigger event
+            $this->trigger(self::EVENT_MODIFY_TAX_FOR_ORDER_REQUEST, $event);
+
+
+            $orderData = $client->taxForOrder($event->requestParams);
             // Save data into cache
             Craft::$app->getCache()->set($cacheKey, $orderData);
         }
