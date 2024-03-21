@@ -8,7 +8,9 @@ It replaces Craft Commerce’s built-in tax engine, offloading the work of manag
 
 ## Requirements
 
-This plugin requires Craft Commerce (Pro edition) 4.0 or later.
+This plugin requires either:
+- Craft Commerce 4.0 or later
+- Craft Commerce 5.0 or later.
 
 ## Installation
 

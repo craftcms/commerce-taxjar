@@ -2,7 +2,7 @@
 
 ## 3.0.0 - 2024-03-20
 
-- Added Commerce 5 compatibility.
+- Added Craft CMS 5 and Craft Commerce 5 compatibility.
 
 ## 2.1.0 - 2024-03-20
 
