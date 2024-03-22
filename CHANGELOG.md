@@ -1,8 +1,8 @@
-# Release Notes for Craft Commerce
+# Release Notes for TaxJar for Craft Commerce
 
 ## 3.0.0 - 2024-03-20
 
-- Added Craft CMS 5 and Craft Commerce 5 compatibility.
+- TaxJar now requires Craft Commerce 5.0.0-beta.1 or later.
 
 ## 2.1.0 - 2024-03-20
 
