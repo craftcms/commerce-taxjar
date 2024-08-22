@@ -55,7 +55,7 @@ class CategoriesController extends BaseCpController
                     $category->description = rtrim(substr($category->description, 0, 252)) . '...';
                 }
 
-                if (!Plugin::getInstance()->getTaxCategories()->saveTaxCategory($category)) {
+                if (!Plugin::getInstance()->getTaxCategories()->saveTaxCategory($category, false)) {
                     Craft::error('Could not save tax category from taxjar.');
                     return $this->asJson(['success' => false]);
                 }
