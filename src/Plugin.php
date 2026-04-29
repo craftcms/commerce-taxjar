@@ -83,7 +83,8 @@ class Plugin extends BasePlugin
         return \Craft::$app->view->renderTemplate('commerce-taxjar/_settings.twig', [
             'plugin' => $this,
             'settings' => $settings,
-        ]);}
+        ]);
+    }
 
     /**
      * Registers the event handlers
