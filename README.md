@@ -80,6 +80,42 @@ When the TaxJar API is queried for tax info, the full API response is JSON-encod
 
 ---
 
+## Events
+
+### `craft\commerce\taxjar\adjusters\TaxJar::EVENT_MODIFY_TAX_FOR_ORDER_REQUEST`
+
+Raised just before the TaxJar API is queried for an order's tax. Allows you to modify the request parameters sent to TaxJar's [`taxForOrder`](https://developers.taxjar.com/api/reference/#post-calculate-sales-tax-for-an-order) endpoint.
+
+The event is an instance of `craft\commerce\taxjar\events\ModifyRequestEvent`, which has the following properties:
+
+| Property | Type | Description |
+|---|---|---|
+| `requestParams` | `array` | The parameters that will be sent to the TaxJar API. Modify this to change the request. |
+| `order` | `craft\commerce\elements\Order` | The order being calculated. |
+| `address` | `craft\elements\Address` | The shipping address of the order. |
+
+**Example — adding a customer exemption:**
+
+```php
+use craft\commerce\taxjar\adjusters\TaxJar as TaxJarAdjuster;
+use craft\commerce\taxjar\events\ModifyRequestEvent;
+
+Event::on(
+    TaxJarAdjuster::class,
+    TaxJarAdjuster::EVENT_MODIFY_TAX_FOR_ORDER_REQUEST,
+    function(ModifyRequestEvent $event) {
+        $customer = $event->order->getCustomer();
+
+        if ($customer && $customer->group === 'wholesale') {
+            $event->requestParams['exemption_type'] = 'wholesale';
+            $event->requestParams['customer_id'] = (string)$customer->id;
+        }
+    }
+);
+```
+
+---
+
 ## Feature Roadmap
 
 - [x] Pull live rates for a cart from TaxJar.
