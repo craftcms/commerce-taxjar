@@ -78,6 +78,10 @@ class TaxJar extends Component implements AdjusterInterface
             return [];
         }
 
+        if (empty($order->getLineItems())) {
+            return [];
+        }
+
         try {
             $orderTaxes = $this->_getOrderTaxData();
         } catch (Exception $e) {
