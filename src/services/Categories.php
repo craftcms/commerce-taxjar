@@ -63,7 +63,7 @@ class Categories extends Component
                 $category->default = false;
             }
 
-            if (!$taxCategories->saveTaxCategory($category, false)) {
+            if (!$taxCategories->saveTaxCategory($category)) {
                 Craft::error("TaxJar sync: could not save tax category '{$handle}'.", 'commerce-taxjar');
                 throw new \RuntimeException("Could not save tax category '{$handle}'.");
             }
