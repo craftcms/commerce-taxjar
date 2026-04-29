@@ -1,8 +1,23 @@
 # Release Notes for TaxJar for Craft Commerce
 
+## Unreleased
+
+### Added
+- The plugin now has a settings page in the control panel.
+- The API Key and Sandbox Mode settings now support environment variables.
+- Added a `Categories` service (`Plugin::getInstance()->getCategories()`) with a `sync()` method for syncing TaxJar categories into Craft Commerce.
+- Added `commerce-taxjar/categories` and `commerce-taxjar/categories/sync` console commands for listing and syncing TaxJar tax categories.
+
+### Fixed
+- Fixed a 400 error from the TaxJar API when recalculating an order with no line items. ([#34](https://github.com/craftcms/commerce-taxjar/issues/34))
+
+### Changed
+- The plugin's main class has been renamed from `craft\commerce\taxjar\TaxJar` to `craft\commerce\taxjar\Plugin`.
+- Category sync now updates existing categories in addition to creating new ones.
+
 ## 3.0.0 - 2024-03-20
 
-- TaxJar now requires Craft Commerce 5.0.0-beta.1 or later.
+- TaxJar now requires Craft Commerce 5 or later.
 
 ## 2.1.0 - 2024-03-20
 

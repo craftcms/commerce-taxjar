@@ -15,7 +15,7 @@ use craft\commerce\models\OrderAdjustment;
 use craft\commerce\Plugin;
 use craft\commerce\taxjar\events\ModifyRequestEvent;
 use craft\commerce\taxjar\models\Settings;
-use craft\commerce\taxjar\TaxJar as TaxJarPlugin;
+use craft\commerce\taxjar\Plugin as TaxJarPlugin;
 use craft\elements\Address;
 use DvK\Vat\Validator;
 use TaxJar\Exception;
@@ -78,13 +78,17 @@ class TaxJar extends Component implements AdjusterInterface
             return [];
         }
 
+        if (empty($order->getLineItems())) {
+            return [];
+        }
+
         try {
             $orderTaxes = $this->_getOrderTaxData();
         } catch (Exception $e) {
             $message = 'TaxJar API error code: ' . $e->getStatusCode() . ' Message: ' . $e->getMessage();
             Craft::error($message, 'commerce-taxjar');
 
-            if ($taxJarSettings->useSandbox) {
+            if ($taxJarSettings->getUseSandbox()) {
                 $adjustment = new OrderAdjustment();
                 $adjustment->type = self::ADJUSTMENT_TYPE;
                 $adjustment->name = Craft::t('commerce', 'TaxJar Error');

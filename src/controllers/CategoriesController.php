@@ -9,9 +9,7 @@ namespace craft\commerce\taxjar\controllers;
 
 use Craft;
 use craft\commerce\controllers\BaseCpController;
-use craft\commerce\models\TaxCategory;
-use craft\commerce\Plugin;
-use craft\commerce\taxjar\TaxJar;
+use craft\commerce\taxjar\Plugin;
 use yii\web\HttpException;
 use yii\web\Response;
 
@@ -33,33 +31,10 @@ class CategoriesController extends BaseCpController
         $this->requirePermission('commerce-manageTaxes');
 
         try {
-            $allCategories = TaxJar::getInstance()->getApi()->getCategories();
+            Plugin::getInstance()->getCategories()->sync();
         } catch (\Exception $exception) {
+            Craft::error('TaxJar sync failed: ' . $exception->getMessage(), 'commerce-taxjar');
             return $this->asJson(['success' => false]);
-        }
-
-
-        foreach ($allCategories as $taxJarCategory) {
-            $handle = $taxJarCategory->product_tax_code;
-            $category = Plugin::getInstance()->getTaxCategories()->getTaxCategoryByHandle($handle);
-
-            if (!$category) {
-                $category = new TaxCategory();
-
-                $category->default = false;
-                $category->handle = $handle;
-                $category->name = $taxJarCategory->name;
-                $category->description = $taxJarCategory->description;
-
-                if (strlen($category->description) >= 255) {
-                    $category->description = rtrim(substr($category->description, 0, 252)) . '...';
-                }
-
-                if (!Plugin::getInstance()->getTaxCategories()->saveTaxCategory($category, false)) {
-                    Craft::error('Could not save tax category from taxjar.');
-                    return $this->asJson(['success' => false]);
-                }
-            }
         }
 
         return $this->asJson(['success' => true]);

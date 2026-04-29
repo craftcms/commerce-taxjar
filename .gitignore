@@ -6,11 +6,18 @@
 # COMPOSER
 /vendor
 
+# TESTS
+tests/_output
+tests/_support/_generated
+tests/_craft/storage
+
 # BUILD FILES
 /bower_components/*
 /node_modules/*
 /build/*
 /yarn-error.log
+
+CLAUDE.md
 
 # MISC FILES
 .cache

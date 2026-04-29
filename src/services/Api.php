@@ -8,45 +8,43 @@
 namespace craft\commerce\taxjar\services;
 
 use craft\commerce\taxjar\models\Settings;
-use craft\commerce\taxjar\TaxJar;
+use craft\commerce\taxjar\Plugin;
 use TaxJar\Client;
 use yii\base\Component;
 
 /**
- * TaxJar tax category service.
+ * TaxJar API service.
  *
  * @author Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @since 1.0
  *
- *
- * @property \TaxJar\Client $client
- * @property mixed $categories
+ * @property Client $client
  */
 class Api extends Component
 {
     /**
      * @var Client
      */
-    private $_client;
+    private Client $_client;
 
     /**
-     *
+     * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
-        /** @var Settings $taxJarSettings */
-        $taxJarSettings = TaxJar::getInstance()->getSettings();
-        $apiKey = $taxJarSettings->apiKey;
-        $this->_client = Client::withApiKey($apiKey);
-        if ($taxJarSettings->useSandbox) {
+        /** @var Settings $settings */
+        $settings = Plugin::getInstance()->getSettings();
+        $this->_client = Client::withApiKey($settings->getApiKey());
+
+        if ($settings->getUseSandbox()) {
             $this->_client->setApiConfig('api_url', Client::SANDBOX_API_URL);
         }
     }
 
     /**
-     * @return mixed
+     * Returns all tax categories from the TaxJar API.
      */
-    public function getCategories()
+    public function getCategories(): mixed
     {
         return $this->_client->categories();
     }
@@ -54,7 +52,7 @@ class Api extends Component
     /**
      * @return Client
      */
-    public function getClient()
+    public function getClient(): Client
     {
         return $this->_client;
     }

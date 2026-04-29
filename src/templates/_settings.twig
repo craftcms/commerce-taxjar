@@ -1,0 +1,23 @@
+{# @var plugin \craft\commerce\taxjar\TaxJar #}
+{# @var settings \ccraft\commerce\taxjar\models\Settings #}
+
+{% import '_includes/forms.twig' as forms %}
+
+{{ forms.autoSuggestField({
+    label: 'API Key'|t('commerce-taxjar'),
+    id: 'apiKey',
+    name: 'apiKey',
+    value: settings.getApiKey(false),
+    errors: settings.getErrors('apiKey'),
+    required: true,
+    suggestEnvVars: true,
+}) }}
+
+{{ forms.booleanMenuField({
+    label: 'Sandbox Test Mode'|t('commerce-taxjar'),
+    id: 'useSandbox',
+    name: 'useSandbox',
+    value: settings.getUseSandbox(false),
+    errors: settings.getErrors('useSandbox'),
+    includeEnvVars: true,
+}) }}

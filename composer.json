@@ -32,11 +32,9 @@
     }
   },
   "extra": {
-    "name": "TaxJar",
     "handle": "commerce-taxjar",
-    "hasCpSettings": false,
-    "hasCpSection": false,
-    "class": "craft\\commerce\\taxjar\\TaxJar"
+    "name": "TaxJar",
+    "developer": "Pixel & Tonic"
   },
   "config": {
     "allow-plugins": {
@@ -48,12 +46,25 @@
   "require-dev": {
     "craftcms/phpstan": "dev-main",
     "craftcms/ecs": "dev-main",
-    "craftcms/rector": "dev-main"
+    "craftcms/rector": "dev-main",
+    "codeception/codeception": "^5.0.0",
+    "codeception/module-asserts": "^3.0.0",
+    "codeception/module-yii2": "^1.1.9",
+    "vlucas/phpdotenv": "^5.4.1"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "craft\\commerce\\taxjar\\tests\\": "tests/"
+    }
   },
   "scripts": {
     "phpstan": "phpstan --memory-limit=1G",
     "check-cs": "ecs check --ansi",
-    "fix-cs": "ecs check --ansi --fix"
+    "fix-cs": "ecs check --ansi --fix",
+    "testunit": [
+      "Composer\\Config::disableProcessTimeout",
+      "codecept run unit"
+    ]
   },
   "minimum-stability": "dev",
   "prefer-stable": true
