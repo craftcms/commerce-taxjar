@@ -9,6 +9,7 @@
 # TESTS
 tests/_output
 tests/_support/_generated
+tests/_craft/storage/runtime/.gitignore
 tests/_craft/storage/runtime/cache/
 tests/_craft/storage/runtime/compiled_classes/*
 !tests/_craft/storage/runtime/compiled_classes/.gitkeep
