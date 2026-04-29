@@ -1,6 +1,6 @@
 # Release Notes for TaxJar for Craft Commerce
 
-## Unreleased
+## 3.1.0 - 2026-04-29
 
 ### Added
 - The plugin now has a settings page in the control panel.
