@@ -9,7 +9,11 @@
 # TESTS
 tests/_output
 tests/_support/_generated
-tests/_craft/storage
+tests/_craft/storage/runtime/cache/
+tests/_craft/storage/runtime/compiled_templates/
+tests/_craft/storage/logs/
+tests/_craft/storage/config-backups/
+tests/_craft/storage/config-deltas/
 
 # BUILD FILES
 /bower_components/*
