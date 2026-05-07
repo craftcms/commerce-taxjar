@@ -1,5 +1,10 @@
 # Release Notes for Craft Commerce
 
+## 2.1.1 - 2026-05-07
+
+### Fixed
+- Fixed a 400 error from the TaxJar API when recalculating an order with no line items. ([#34](https://github.com/craftcms/commerce-taxjar/issues/34))
+
 ## 2.1.0 - 2024-03-20
 
 ### Added
